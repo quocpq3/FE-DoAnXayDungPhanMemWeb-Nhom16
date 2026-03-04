@@ -1,8 +1,8 @@
 const Logo: React.FC = () => {
   return (
     <>
-      <div className="text-4xl  font-bold">
-        F<span className="text-blue-500">oo</span>dy
+      <div className="text-5xl font-bold">
+        F<span className="text-[#ff4d4f]">oo</span>dy
       </div>
     </>
   );

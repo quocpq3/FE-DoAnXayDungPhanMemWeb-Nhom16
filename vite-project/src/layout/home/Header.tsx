@@ -1,4 +1,4 @@
-import { Layout, Menu } from "antd";
+import { Layout, Menu, ConfigProvider } from "antd";
 import ButtonMain from "../../components/buttons/Button";
 import Logo from "../../components/logo/Logo";
 import { ShoppingOutlined } from "@ant-design/icons";
@@ -23,24 +23,28 @@ const items = [
 const HeaderLayout: React.FC = () => {
   const location = useLocation();
   return (
-    <Header
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-        background: "#fff",
-      }}
-    >
-      <Logo />
-      <Menu
-        className="font-semibold"
-        mode="horizontal"
-        selectedKeys={[location.pathname]}
-        items={items}
-      />
-      <div className="flex gap-4">
-        <ShoppingOutlined className="text-xl" />
-        <ButtonMain>Sign Up</ButtonMain>
+    <Header style={{ background: "#fff" }}>
+      <div className="container space-between">
+        <Logo />
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#ff4d4f",
+            },
+          }}
+        >
+          <Menu
+            className="font-semibold"
+            mode="horizontal"
+            theme="light"
+            selectedKeys={[location.pathname]}
+            items={items}
+          />
+        </ConfigProvider>
+        <div className="flex gap-4">
+          <ShoppingOutlined className="text-xl" />
+          <ButtonMain color="danger">Sign Up</ButtonMain>
+        </div>
       </div>
     </Header>
   );

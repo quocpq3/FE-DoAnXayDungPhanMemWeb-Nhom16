@@ -1,16 +1,30 @@
 import { Button } from "antd";
+import type React from "react";
+import type { ButtonProps } from "antd";
 
-interface children {
+interface ButtonMainProps {
   children?: React.ReactNode;
+  color?: ButtonProps["color"];
+  variant?: ButtonProps["variant"];
 }
 
-const ButtonMain: React.FC<children> = ({ children }) => {
+const ButtonMain: React.FC<ButtonMainProps> = ({
+  children,
+  color = "primary",
+  variant = "solid",
+}) => {
   return (
     <Button
-      style={{ padding: "0 40px", fontSize: "14px", fontWeight: "semibold" }}
       size="large"
       shape="round"
-      type="primary"
+      variant={variant}
+      color={color}
+      style={{
+        padding: "0 40px",
+        fontSize: "14px",
+        fontWeight: 600,
+        width: "140px",
+      }}
     >
       {children}
     </Button>
