@@ -4,6 +4,7 @@ import HomePage from "../pages/home/home";
 import MenuPage from "../pages/home/menu";
 import AboutPage from "../pages/home/about";
 import ContactPage from "../pages/home/contact";
+import UserTable from "../pages/home/user";
 
 const routes = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const routes = createBrowserRouter([
       {
         path: "contact",
         element: <ContactPage />,
+      },
+      {
+        path: "user-table",
+        element: <UserTable />,
       },
     ],
   },

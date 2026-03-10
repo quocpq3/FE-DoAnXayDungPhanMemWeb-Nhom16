@@ -10,7 +10,7 @@ const items = [
   { key: "/", label: <NavLink to="/">Trang chủ</NavLink>, to: "/" },
   {
     key: "/menu",
-    label: <NavLink to="/menu">Table User</NavLink>,
+    label: <NavLink to="/menu">Menu</NavLink>,
     to: "/menu",
   },
   {
@@ -22,6 +22,11 @@ const items = [
     key: "/contact",
     label: <NavLink to="/contact">Liên hệ</NavLink>,
     to: "/contact",
+  },
+  {
+    key: "/user-table",
+    label: <NavLink to="/user-table">User Table</NavLink>,
+    to: "/user-table",
   },
 ];
 const HeaderLayout: React.FC = () => {
