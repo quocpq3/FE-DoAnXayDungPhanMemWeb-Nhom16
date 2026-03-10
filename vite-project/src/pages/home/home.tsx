@@ -31,8 +31,8 @@ const HomePage: React.FC = () => {
                   marginBottom: 0,
                 }}
               >
-                All Fast Food <br />
-                is Available at <span style={{ color: "#ff4d4f" }}>Foody</span>
+                Tất cả đồ ăn nhanh <br />
+                đều có sẵn tại <span style={{ color: "#ff4d4f" }}>Foody</span>
               </Title>
 
               <Paragraph
@@ -43,23 +43,23 @@ const HomePage: React.FC = () => {
                   marginTop: "16px",
                 }}
               >
-                Explore our diverse menu, from burgers and fried chicken to
-                super-saving combos. With just one tap, Foody delivers the
-                flavors right to your doorstep.
+                Khám phá thực đơn đa dạng của chúng tôi, từ burger và gà rán đến
+                combo tiết kiệm siêu. Chỉ với một lần chạm, Foody mang hương vị
+                đến tận cửa nhà bạn.
               </Paragraph>
               <Flex gap={20}>
                 <ButtonMain color="danger">
-                  <ShoppingOutlined className="mr-2 text-xl" /> Order Now
+                  <ShoppingOutlined className="text-xl" /> Đặt hàng ngay
                 </ButtonMain>
                 <ButtonMain variant="outlined" color="danger">
                   <NavLink to="/menu">
                     <MenuOutlined className="mr-2" />
-                    See our Menu
+                    Thực đơn
                   </NavLink>
                 </ButtonMain>
               </Flex>
               <Flex vertical gap={10} className="mt-4">
-                <span className="font-bold text-xs">Reviews</span>
+                <span className="font-bold text-xs">Đánh giá</span>
                 <Avatar.Group
                   size="large"
                   max={{

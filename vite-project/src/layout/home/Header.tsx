@@ -7,16 +7,20 @@ import { NavLink, useLocation } from "react-router-dom";
 const { Header } = Layout;
 
 const items = [
-  { key: "/", label: <NavLink to="/">Home</NavLink>, to: "/" },
-  { key: "/menu", label: <NavLink to="/menu">Menu</NavLink>, to: "/menu" },
+  { key: "/", label: <NavLink to="/">Trang chủ</NavLink>, to: "/" },
+  {
+    key: "/menu",
+    label: <NavLink to="/menu">Table User</NavLink>,
+    to: "/menu",
+  },
   {
     key: "/about",
-    label: <NavLink to="/about">About Us</NavLink>,
+    label: <NavLink to="/about">Giới thiệu</NavLink>,
     to: "/about",
   },
   {
     key: "/contact",
-    label: <NavLink to="/contact">Contact</NavLink>,
+    label: <NavLink to="/contact">Liên hệ</NavLink>,
     to: "/contact",
   },
 ];
@@ -34,16 +38,17 @@ const HeaderLayout: React.FC = () => {
           }}
         >
           <Menu
-            className="font-semibold"
+            className="font-semibold justify-center"
             mode="horizontal"
             theme="light"
             selectedKeys={[location.pathname]}
             items={items}
+            style={{ flex: 1 }}
           />
         </ConfigProvider>
         <div className="flex gap-4">
           <ShoppingOutlined className="text-xl" />
-          <ButtonMain color="danger">Sign Up</ButtonMain>
+          <ButtonMain color="danger">Đăng ký</ButtonMain>
         </div>
       </div>
     </Header>
