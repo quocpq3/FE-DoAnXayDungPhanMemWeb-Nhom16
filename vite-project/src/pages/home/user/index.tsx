@@ -1,16 +1,18 @@
 import { Button, Popconfirm, Space, Table, type TableProps } from "antd";
 import React, { useEffect, useState } from "react";
 import { UserDeleteOutlined, EditOutlined } from "@ant-design/icons";
-
 import type { IUser } from "../../../services/apis/user/user.interface";
 import { message } from "antd";
 import { deleteUser, getUsers } from "../../../services/apis/user/user.api";
 import UserModalForm from "../user/UserModalForm";
+import { EFormType } from "../../../config/enum";
 
 const UserTable: React.FC = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<IUser | undefined>();
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -61,7 +63,13 @@ const UserTable: React.FC = () => {
           >
             <Button danger icon={<UserDeleteOutlined />} />
           </Popconfirm>
-          <Button icon={<EditOutlined />} />
+          <Button
+            onClick={() => {
+              setSelectedUser(record);
+              setIsOpenUpdateModal(true);
+            }}
+            icon={<EditOutlined />}
+          />
         </Space>
       ),
     },
@@ -88,6 +96,21 @@ const UserTable: React.FC = () => {
         />
       </div>
       <UserModalForm
+        formType={EFormType.UPDATE}
+        user={selectedUser}
+        open={isOpenUpdateModal}
+        onClose={() => {
+          setIsOpenUpdateModal(false);
+          setSelectedUser(undefined);
+        }}
+        onSuccess={() => {
+          setIsOpenUpdateModal(false);
+          setSelectedUser(undefined);
+          fetchUsers();
+        }}
+      />
+      <UserModalForm
+        formType={EFormType.CREATE}
         open={isOpenCreateModal}
         onClose={() => setIsOpenCreateModal(false)}
         onSuccess={() => {

@@ -6,11 +6,6 @@ export const getUsers = async (): Promise<IUser[]> => {
   return res.data.result;
 };
 
-export const getUser = async (): Promise<IUser> => {
-  const res = await axiosClient.get<ApiResponse<IUser>>("/user");
-  return res.data.result;
-};
-
 export const getUserById = async (id: number): Promise<IUser> => {
   const res = await axiosClient.get<ApiResponse<IUser>>(`/users/${id}`);
   return res.data.result;
@@ -18,6 +13,14 @@ export const getUserById = async (id: number): Promise<IUser> => {
 
 export const createUser = async (data: IUserCreate): Promise<IUser> => {
   const res = await axiosClient.post<ApiResponse<IUser>>("/users", data);
+  return res.data.result;
+};
+
+export const updateUser = async (
+  id: number,
+  data: IUserCreate,
+): Promise<IUser> => {
+  const res = await axiosClient.put<ApiResponse<IUser>>(`/users/${id}`, data);
   return res.data.result;
 };
 

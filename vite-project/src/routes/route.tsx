@@ -33,6 +33,17 @@ const routes = createBrowserRouter([
       },
     ],
   },
+  //admin route
+  {
+    path: "/admin",
+    element: <></>,
+    children: [
+      {
+        index: true,
+        element: <></>,
+      },
+    ],
+  },
 ]);
 
 export default routes;
