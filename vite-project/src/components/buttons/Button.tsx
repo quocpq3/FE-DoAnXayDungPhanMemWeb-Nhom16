@@ -7,6 +7,7 @@ interface ButtonMainProps {
   color?: ButtonProps["color"];
   variant?: ButtonProps["variant"];
   onClick?: ButtonProps["onClick"];
+  icon?: React.ReactNode;
 }
 
 const ButtonMain: React.FC<ButtonMainProps> = ({
@@ -14,9 +15,11 @@ const ButtonMain: React.FC<ButtonMainProps> = ({
   color = "primary",
   variant = "solid",
   onClick,
+  icon,
 }) => {
   return (
     <Button
+      icon={icon}
       size="large"
       shape="round"
       variant={variant}

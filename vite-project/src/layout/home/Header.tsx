@@ -1,4 +1,4 @@
-import { Layout, Menu, ConfigProvider } from "antd";
+import { Layout, Menu } from "antd";
 import ButtonMain from "../../components/buttons/Button";
 import Logo from "../../components/logo/Logo";
 import { ShoppingOutlined } from "@ant-design/icons";
@@ -39,22 +39,14 @@ const HeaderLayout: React.FC = () => {
       <Header style={{ background: "#fff" }}>
         <div className="container space-between">
           <Logo />
-          <ConfigProvider
-            theme={{
-              token: {
-                colorPrimary: "#ff4d4f",
-              },
-            }}
-          >
-            <Menu
-              className="font-semibold justify-center"
-              mode="horizontal"
-              theme="light"
-              selectedKeys={[location.pathname]}
-              items={items}
-              style={{ flex: 1 }}
-            />
-          </ConfigProvider>
+          <Menu
+            className="font-semibold justify-center"
+            mode="horizontal"
+            theme="light"
+            selectedKeys={[location.pathname]}
+            items={items}
+            style={{ flex: 1 }}
+          />
           <div className="flex gap-4">
             <ShoppingOutlined className="text-xl" />
             <ButtonMain onClick={() => setOpenModal(true)} color="danger">

@@ -1,4 +1,4 @@
-import { Avatar, Flex, Image, Rate, Tooltip } from "antd";
+import { Avatar, Button, Card, Flex, Image, Rate, Tooltip } from "antd";
 import { Typography } from "antd";
 import ButtonMain from "../../components/buttons/Button";
 import {
@@ -7,6 +7,8 @@ import {
   AntDesignOutlined,
   UserOutlined,
   ArrowRightOutlined,
+  AppstoreOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import buggerImg from "../../images/banner/Sizzling-Pepperoni-Pizza-Freshly-Baked-Crust-PNG.png";
 import { NavLink } from "react-router-dom";
@@ -15,14 +17,22 @@ const { Title, Paragraph } = Typography;
 const titleButtonCategory = [
   { id: 1, name: "Gà rán" },
   { id: 2, name: "Burger " },
-  { id: 3, name: "Trà sữa" },
-  { id: 4, name: "Combo" },
+  { id: 3, name: "Pizza" },
+  { id: 4, name: "Đồ uống" },
+  { id: 5, name: "Combo" },
 ];
+const { Meta } = Card;
 const HomePage: React.FC = () => {
+  const clampStyle: React.CSSProperties = {
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+  };
   return (
     <>
       <div className="container space-evenly" style={{ paddingTop: "20px" }}>
-        <Flex gap={30} vertical>
+        <Flex gap={20} vertical>
           {/* banner */}
           <Flex justify="space-evenly">
             <Flex
@@ -107,16 +117,59 @@ const HomePage: React.FC = () => {
               Xem tất cả <ArrowRightOutlined />
             </span>
           </Flex>
-          <Flex>
-            <ButtonMain color="danger" variant="outlined">
+          <Flex gap={20}>
+            <ButtonMain
+              icon={<AppstoreOutlined />}
+              color="danger"
+              variant="solid"
+            >
               Tất cả
             </ButtonMain>
             {titleButtonCategory.map((item) => (
-              <ButtonMain color="default" variant="outlined" key={item.name}>
+              <ButtonMain color="danger" variant="outlined" key={item.name}>
                 {item.name}
               </ButtonMain>
             ))}
           </Flex>
+          <div className="pt-6">
+            <Card
+              hoverable
+              style={{ width: 200 }}
+              bodyStyle={{ padding: "20px 12px 5px 12px" }}
+              cover={
+                <img
+                  style={{ height: 180, objectFit: "cover" }}
+                  draggable={false}
+                  alt="example"
+                  src="https://i.pinimg.com/736x/31/86/c9/3186c919b6957920d377d7492f424eea.jpg"
+                />
+              }
+            >
+              <Meta
+                title={
+                  <span className="text-lg font-bold">Classic Beef Buger</span>
+                }
+                description={
+                  <div className="text-[13px]" style={clampStyle}>
+                    Thịt bò Mỹ nướng, phô mai Cheddar, xà lách tươi và sốt đặc
+                  </div>
+                }
+              />
+              <Flex justify="space-between" style={{ padding: "18px 0" }}>
+                <span className="text-[#ff4d4f] text-xl font-bold">
+                  {" "}
+                  85.000đ
+                </span>
+                <Button
+                  icon={<ShoppingCartOutlined />}
+                  variant="solid"
+                  color="danger"
+                >
+                  Thêm
+                </Button>
+              </Flex>
+            </Card>
+          </div>
         </Flex>
       </div>
     </>
