@@ -6,16 +6,24 @@ import {
   MenuOutlined,
   AntDesignOutlined,
   UserOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import buggerImg from "../../images/banner/Sizzling-Pepperoni-Pizza-Freshly-Baked-Crust-PNG.png";
 import { NavLink } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
+const titleButtonCategory = [
+  { id: 1, name: "Gà rán" },
+  { id: 2, name: "Burger " },
+  { id: 3, name: "Trà sữa" },
+  { id: 4, name: "Combo" },
+];
 const HomePage: React.FC = () => {
   return (
     <>
       <div className="container space-evenly" style={{ paddingTop: "20px" }}>
-        <div>
+        <Flex gap={30} vertical>
+          {/* banner */}
           <Flex justify="space-evenly">
             <Flex
               gap={24}
@@ -92,7 +100,24 @@ const HomePage: React.FC = () => {
               />
             </Flex>
           </Flex>
-        </div>
+          {/*  */}
+          <Flex justify="space-between" align="center">
+            <Title level={3}>Danh mục món ăn</Title>
+            <span className="font-semibold text-[#ff4d4f]">
+              Xem tất cả <ArrowRightOutlined />
+            </span>
+          </Flex>
+          <Flex>
+            <ButtonMain color="danger" variant="outlined">
+              Tất cả
+            </ButtonMain>
+            {titleButtonCategory.map((item) => (
+              <ButtonMain color="default" variant="outlined" key={item.name}>
+                {item.name}
+              </ButtonMain>
+            ))}
+          </Flex>
+        </Flex>
       </div>
     </>
   );
