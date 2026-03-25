@@ -77,7 +77,7 @@ const HomePage: React.FC = () => {
                 </ButtonMain>
               </Flex>
               <Flex vertical gap={10} className="mt-4">
-                <span className="font-bold text-xs">Đánh giá</span>
+                <span className="text-xs font-bold">Đánh giá</span>
                 <Avatar.Group
                   size="large"
                   max={{

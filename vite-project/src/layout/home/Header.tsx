@@ -5,42 +5,38 @@ import { ShoppingOutlined } from "@ant-design/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import ModalLogin from "./modalLogin";
+import { type AppRoute } from "../../routes/appRoute";
+import routes from "../../routes/appRoute";
 
 const { Header } = Layout;
 
-const items = [
-  { key: "/", label: <NavLink to="/">Trang chủ</NavLink>, to: "/" },
-  {
-    key: "/menu",
-    label: <NavLink to="/menu">Menu</NavLink>,
-    to: "/menu",
-  },
-  {
-    key: "/about",
-    label: <NavLink to="/about">Giới thiệu</NavLink>,
-    to: "/about",
-  },
-  {
-    key: "/contact",
-    label: <NavLink to="/contact">Liên hệ</NavLink>,
-    to: "/contact",
-  },
-  {
-    key: "/user-table",
-    label: <NavLink to="/user-table">User Table</NavLink>,
-    to: "/user-table",
-  },
-];
 const HeaderLayout: React.FC = () => {
   const location = useLocation();
   const [openModal, setOpenModal] = useState(false);
+
+  const genderMenuItems = (routes: AppRoute[]) => {
+    return routes
+      .filter((route) => route.label)
+      .map((route) => {
+        const path = route.index ? "/" : route.path;
+        if (!path) return null;
+        return {
+          key: path,
+          label: <NavLink to={path}>{route.label}</NavLink>,
+        };
+      });
+  };
+
+  const mainRoutes = routes.find((r) => r.path === "/");
+
+  const items = genderMenuItems(mainRoutes?.children || []);
   return (
     <>
       <Header style={{ background: "#fff" }}>
         <div className="container space-between">
           <Logo />
           <Menu
-            className="font-semibold justify-center"
+            className="justify-center font-semibold"
             mode="horizontal"
             theme="light"
             selectedKeys={[location.pathname]}

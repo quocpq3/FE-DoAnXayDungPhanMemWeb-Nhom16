@@ -1,12 +1,11 @@
-import { RouterProvider } from "react-router-dom";
 import "./App.css";
-import routes from "./routes/route";
 import "animate.css";
+import AppRoutes from "./routes";
 
 function App() {
   return (
     <>
-      <RouterProvider router={routes} />
+      <AppRoutes />
     </>
   );
 }
