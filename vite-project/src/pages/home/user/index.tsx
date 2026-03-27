@@ -2,12 +2,13 @@ import { Button, Popconfirm, Space, Table, type TableProps } from "antd";
 import React, { useEffect, useState } from "react";
 import { UserDeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { IUser } from "../../../services/apis/user/user.interface";
-import { message } from "antd";
 import { deleteUser, getUsers } from "../../../services/apis/user/user.api";
 import UserModalForm from "../user/UserModalForm";
 import { EFormType } from "../../../config/enum";
+import { App } from "antd";
 
 const UserTable: React.FC = () => {
+  const { message } = App.useApp();
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);

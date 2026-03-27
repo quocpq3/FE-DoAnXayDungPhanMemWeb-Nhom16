@@ -69,7 +69,7 @@ const UserModalForm = ({
 
   return (
     <Modal
-      loading={isLoading}
+      confirmLoading={isLoading}
       title={
         formType === EFormType.CREATE
           ? "THÊM NGƯỜI DÙNG MỚI"
