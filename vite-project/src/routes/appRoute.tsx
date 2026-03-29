@@ -62,11 +62,11 @@ export const routes: AppRoute[] = [
         element: <ContactPage />,
         label: "Liên hệ",
       },
-      {
-        path: "user-table",
-        element: <UserTable />,
-        label: "User Table",
-      },
+      // {
+      //   path: "user-table",
+      //   element: <UserTable />,
+      //   label: "User Table",
+      // },
     ],
   },
   {
