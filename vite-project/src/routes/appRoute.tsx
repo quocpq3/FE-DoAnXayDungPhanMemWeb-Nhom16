@@ -3,7 +3,7 @@ import HomePage from "../pages/home/home";
 import MenuPage from "../pages/home/menu";
 import AboutPage from "../pages/home/about";
 import ContactPage from "../pages/home/contact";
-import UserTable from "../pages/home/user";
+// import UserTable from "../pages/home/user";
 import AdminLayout from "../layout/admin/AdminLayout";
 import AdminDashboardPage from "../pages/admin/dashboard";
 import LoginLayout from "../layout/auth";
@@ -68,11 +68,11 @@ export const routes: AppRoute[] = [
         element: <ContactPage />,
         label: "Liên hệ",
       },
-      {
-        path: "user-table",
-        element: <UserTable />,
-        label: "User Table",
-      },
+      // {
+      //   path: "user-table",
+      //   element: <UserTable />,
+      //   label: "User Table",
+      // },
     ],
   },
   {
