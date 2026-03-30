@@ -58,7 +58,7 @@ const FoodCategoryPage = () => {
     {
       title: "Slug",
       dataIndex: "slug",
-      render: (slug: string) => <Tag color="processing">{slug}</Tag>,
+      render: (slug: string) => <Tag color="red">{slug}</Tag>,
     },
     {
       title: "Mô tả",
@@ -90,21 +90,22 @@ const FoodCategoryPage = () => {
       ),
     },
   ];
-
+  const handleReload = () => {
+    fetchCategory();
+  };
   return (
     <>
-      <Button
-        onClick={() => setIsOpenCreateModal(true)}
-        size="middle"
-        type="primary"
-      >
-        Thêm
-      </Button>
       <TableUI<ICategory>
         columns={columns}
         data={data}
         loading={loading}
         rowKey="categoryId"
+        extra={
+          <Button onClick={() => setIsOpenCreateModal(true)} type="primary">
+            Thêm
+          </Button>
+        }
+        onReload={handleReload}
       />
       <CategotyModalForm
         formType={EFormType.UPDATE}

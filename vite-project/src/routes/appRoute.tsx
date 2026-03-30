@@ -10,7 +10,13 @@ import LoginLayout from "../layout/auth";
 import LoginPage from "../pages/auth/login";
 import RegisterPage from "../pages/auth/register";
 import FoodCateGoryPage from "../pages/admin/food-category";
-import { DashboardOutlined, AppstoreAddOutlined } from "@ant-design/icons";
+import FoodPage from "../pages/admin/food";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPizzaSlice,
+  faChartLine,
+  faLayerGroup,
+} from "@fortawesome/free-solid-svg-icons";
 
 export interface AppRoute {
   path?: string;
@@ -77,13 +83,19 @@ export const routes: AppRoute[] = [
         index: true,
         element: <AdminDashboardPage />,
         label: "Dashboard",
-        icon: <DashboardOutlined />,
+        icon: <FontAwesomeIcon icon={faChartLine} />,
       },
       {
         path: "food-category",
         element: <FoodCateGoryPage />,
         label: "Loại món ăn",
-        icon: <AppstoreAddOutlined />,
+        icon: <FontAwesomeIcon icon={faLayerGroup} />,
+      },
+      {
+        path: "food",
+        element: <FoodPage />,
+        label: "Món ăn",
+        icon: <FontAwesomeIcon icon={faPizzaSlice} />,
       },
     ],
   },
