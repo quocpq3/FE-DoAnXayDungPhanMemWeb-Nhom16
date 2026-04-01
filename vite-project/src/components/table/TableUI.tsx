@@ -72,7 +72,7 @@ const TableUI = <T extends object>({
         dataSource={data}
         loading={loading}
         rowKey={rowKey}
-        pagination={{ pageSize: 10 }}
+        pagination={{ pageSize: 5 }}
         bordered
       />
     </Card>

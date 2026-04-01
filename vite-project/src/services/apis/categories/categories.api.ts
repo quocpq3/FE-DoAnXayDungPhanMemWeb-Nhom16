@@ -1,9 +1,6 @@
+import type { ApiResponse } from "../../../types/apiReponse.interface";
 import axiosClient from "../axiosClient";
-import type {
-  ApiResponse,
-  ICategory,
-  ICategoryCreate,
-} from "./categories.interface";
+import type { ICategory, ICategoryCreate } from "./categories.interface";
 
 export const getCategory = async (): Promise<ICategory[]> => {
   const res =
