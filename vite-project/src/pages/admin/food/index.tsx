@@ -32,6 +32,7 @@ const FoodPage = () => {
     }
   };
   useEffect(() => {
+    console.log("Fetching foods...");
     fetchFood();
   }, []);
 
@@ -55,9 +56,9 @@ const FoodPage = () => {
       title: "Hình ảnh",
       dataIndex: "imageUrl",
       width: 100,
-      render: (url: string) => (
+      render: (url?: string) => (
         <Image
-          src={url}
+          src={url || "https://via.placeholder.com/60"}
           alt="food"
           style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8 }}
         />

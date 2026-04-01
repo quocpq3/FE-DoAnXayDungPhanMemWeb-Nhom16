@@ -1,10 +1,4 @@
-import TableUI from "../../../components/table/TableUI";
-
 const FoodPage = () => {
-  return (
-    <>
-      <TableUI />
-    </>
-  );
+  return <></>;
 };
 export default FoodPage;
