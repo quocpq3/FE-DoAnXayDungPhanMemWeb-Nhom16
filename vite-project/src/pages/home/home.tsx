@@ -151,6 +151,7 @@ const HomePage: React.FC = () => {
           <div className="flex flex-wrap justify-between gap-6 mt-4">
             {data.slice(0, 10).map((item) => (
               <Card
+                loading={loading}
                 hoverable
                 style={{ width: 200 }}
                 bodyStyle={{ padding: "20px 12px 5px 12px" }}
