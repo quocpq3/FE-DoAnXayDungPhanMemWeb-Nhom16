@@ -102,7 +102,7 @@ const FoodCategoryPage = () => {
         rowKey="categoryId"
         extra={
           <Button onClick={() => setIsOpenCreateModal(true)} type="primary">
-            Thêm
+            Thêm loại món
           </Button>
         }
         onReload={handleReload}

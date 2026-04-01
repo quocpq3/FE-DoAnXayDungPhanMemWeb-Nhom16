@@ -12,6 +12,9 @@ import {
 } from "@ant-design/icons";
 import buggerImg from "../../images/banner/Sizzling-Pepperoni-Pizza-Freshly-Baked-Crust-PNG.png";
 import { NavLink } from "react-router-dom";
+import type { IFood } from "../../services/apis/food/food.interface";
+import { useEffect, useState } from "react";
+import { getFoods } from "../../services/apis/food/food.api";
 
 const { Title, Paragraph } = Typography;
 const titleButtonCategory = [
@@ -23,12 +26,26 @@ const titleButtonCategory = [
 ];
 const { Meta } = Card;
 const HomePage: React.FC = () => {
+  const [data, setData] = useState<IFood[]>([]);
+  const [loading, setLoading] = useState(false);
   const clampStyle: React.CSSProperties = {
     display: "-webkit-box",
     WebkitLineClamp: 2,
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
   };
+  const fetchFood = async () => {
+    setLoading(true);
+    try {
+      const res = await getFoods();
+      setData(res);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchFood();
+  }, []);
   return (
     <>
       <div className="container space-evenly" style={{ paddingTop: "20px" }}>
@@ -131,44 +148,46 @@ const HomePage: React.FC = () => {
               </ButtonMain>
             ))}
           </Flex>
-          <div className="pt-6">
-            <Card
-              hoverable
-              style={{ width: 200 }}
-              bodyStyle={{ padding: "20px 12px 5px 12px" }}
-              cover={
-                <img
-                  style={{ height: 180, objectFit: "cover" }}
-                  draggable={false}
-                  alt="example"
-                  src="https://i.pinimg.com/736x/31/86/c9/3186c919b6957920d377d7492f424eea.jpg"
+          <div className="flex flex-wrap justify-between gap-6 mt-4">
+            {data.slice(0, 10).map((item) => (
+              <Card
+                hoverable
+                style={{ width: 200 }}
+                bodyStyle={{ padding: "20px 12px 5px 12px" }}
+                cover={
+                  <img
+                    style={{ height: 180, objectFit: "cover" }}
+                    draggable={false}
+                    alt="example"
+                    src={item.imageUrl}
+                  />
+                }
+              >
+                <Meta
+                  title={
+                    <span className="text-lg font-bold">{item.itemName}</span>
+                  }
+                  description={
+                    <div className="text-[13px]" style={clampStyle}>
+                      {item.description}
+                    </div>
+                  }
                 />
-              }
-            >
-              <Meta
-                title={
-                  <span className="text-lg font-bold">Classic Beef Buger</span>
-                }
-                description={
-                  <div className="text-[13px]" style={clampStyle}>
-                    Thịt bò Mỹ nướng, phô mai Cheddar, xà lách tươi và sốt đặc
-                  </div>
-                }
-              />
-              <Flex justify="space-between" style={{ padding: "18px 0" }}>
-                <span className="text-[#ff4d4f] text-xl font-bold">
-                  {" "}
-                  85.000đ
-                </span>
-                <Button
-                  icon={<ShoppingCartOutlined />}
-                  variant="solid"
-                  color="danger"
-                >
-                  Thêm
-                </Button>
-              </Flex>
-            </Card>
+                <Flex justify="space-between" style={{ padding: "18px 0" }}>
+                  <span className="text-[#ff4d4f] text-xl font-bold">
+                    {" "}
+                    {item.salePrice.toLocaleString()} đ
+                  </span>
+                  <Button
+                    icon={<ShoppingCartOutlined />}
+                    variant="solid"
+                    color="danger"
+                  >
+                    Thêm
+                  </Button>
+                </Flex>
+              </Card>
+            ))}
           </div>
         </Flex>
       </div>
