@@ -21,10 +21,14 @@ import {
   FireOutlined,
   TagsOutlined,
 } from "@ant-design/icons";
-import { deleteFood, getFoods } from "../../../services/apis/food/food.api";
+import {
+  deleteFood,
+  getFoods,
+  searchFood,
+} from "../../../services/apis/food/food.api";
 import FoodModal from "./FoodModal";
 import { EFormType } from "../../../config/enum";
-// import TableToolbar from "../../../components/table/TableToolbar";
+import TableToolbar from "../../../components/table/TableToolbar";
 
 const FoodPage = () => {
   const { message } = App.useApp();
@@ -33,6 +37,8 @@ const FoodPage = () => {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
   const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<IFood | undefined>();
+
+  const [keyword, setKeyword] = useState<string>("");
 
   const fetchFood = async () => {
     setLoading(true);
@@ -55,6 +61,24 @@ const FoodPage = () => {
       message.success("Xóa thành công");
     } catch {
       message.error("Xóa thất bại");
+    }
+  };
+  const hanleSearch = async () => {
+    const keywordTrim = keyword.trim();
+    if (!keywordTrim) {
+      fetchFood();
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await searchFood(keywordTrim);
+      setData(data);
+
+      setKeyword("");
+    } catch {
+      message.error("Tìm kiếm thất bại");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -225,13 +249,12 @@ const FoodPage = () => {
           </Button>
         }
         rightExtra={
-          // <TableToolbar
-          // // onReload={fetchFood}
-          // // keyword={keyword}
-          // // setKeyword={setKeyword}
-          // // onSearch={handleSearch}
-          // />
-          <h1>Quản lý món ăn</h1>
+          <TableToolbar
+            onReload={fetchFood}
+            keyword={keyword}
+            setKeyword={setKeyword}
+            onSearch={hanleSearch}
+          />
         }
       />
       <FoodModal
