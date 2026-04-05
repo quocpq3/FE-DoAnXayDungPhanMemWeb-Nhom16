@@ -24,7 +24,7 @@ import {
 import { deleteFood, getFoods } from "../../../services/apis/food/food.api";
 import FoodModal from "./FoodModal";
 import { EFormType } from "../../../config/enum";
-import TableToolbar from "../../../components/table/TableToolbar";
+// import TableToolbar from "../../../components/table/TableToolbar";
 
 const FoodPage = () => {
   const { message } = App.useApp();
