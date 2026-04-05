@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { Button, Popconfirm, Space, Tag } from "antd";
+import { Button, Popconfirm, Space, Tag, theme, Tooltip } from "antd";
 import TableUI from "../../../components/table/TableUI";
 import type { ICategory } from "../../../services/apis/categories/categories.interface";
 import {
   getCategory,
   deleteCategory,
+  searchCategory,
 } from "../../../services/apis/categories/categories.api";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { TableProps } from "antd";
 import CategotyModalForm from "./CategoryModalForm";
 import { EFormType } from "../../../config/enum";
 import { App } from "antd";
+import TableToolbar from "../../../components/table/TableToolbar";
 const FoodCategoryPage = () => {
   const { message } = App.useApp();
   const [data, setData] = useState<ICategory[]>([]);
@@ -20,6 +22,7 @@ const FoodCategoryPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<
     ICategory | undefined
   >();
+  const [keyword, setKeyword] = useState<string>("");
 
   const fetchCategory = async () => {
     setLoading(true);
@@ -44,6 +47,30 @@ const FoodCategoryPage = () => {
       message.error("Xóa thất bại");
     }
   };
+  const handleSearch = async () => {
+    const keywordTrim = keyword.trim();
+
+    if (!keywordTrim) {
+      fetchCategory();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await searchCategory(keywordTrim);
+
+      setData(data);
+
+      setKeyword("");
+    } catch {
+      message.error("Tìm kiếm thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const { token } = theme.useToken();
+
   const columns: TableProps<ICategory>["columns"] = [
     {
       title: "ID",
@@ -53,46 +80,79 @@ const FoodCategoryPage = () => {
     {
       title: "Tên danh mục",
       dataIndex: "categoryName",
-      render: (text) => <b>{text}</b>,
+      render: (text) => (
+        <span
+          style={{
+            fontWeight: 600,
+            color: token.colorText,
+          }}
+        >
+          {text}
+        </span>
+      ),
     },
     {
       title: "Slug",
       dataIndex: "slug",
-      render: (slug: string) => <Tag color="red">{slug}</Tag>,
+      render: (slug: string) => (
+        <Tag
+          style={{
+            color: token.colorError,
+            backgroundColor: token.colorErrorBg,
+            fontWeight: 500,
+            border: "none",
+          }}
+        >
+          {slug}
+        </Tag>
+      ),
     },
     {
       title: "Mô tả",
       dataIndex: "description",
+      render: (text: string) => (
+        <span style={{ color: token.colorTextSecondary }}>{text || "—"}</span>
+      ),
     },
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
+      render: (date: string) => (
+        <span style={{ color: token.colorTextSecondary }}>
+          {date ? new Date(date).toLocaleDateString("vi-VN") : "—"}
+        </span>
+      ),
     },
     {
       title: "Hành động",
       render: (_, record) => (
         <Space>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setSelectedCategory(record);
-              setIsOpenUpdateModal(true);
-            }}
-          />
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setSelectedCategory(record);
+                setIsOpenUpdateModal(true);
+              }}
+            />
+          </Tooltip>
+
           <Popconfirm
             title="Xóa loại món ăn?"
+            okText="Xóa"
+            cancelText="Hủy"
             onConfirm={() => onDelete(record.categoryId)}
           >
-            <Button danger type="text" icon={<DeleteOutlined />} />
+            <Tooltip title="Xóa">
+              <Button danger type="text" icon={<DeleteOutlined />} />
+            </Tooltip>
           </Popconfirm>
         </Space>
       ),
     },
   ];
-  const handleReload = () => {
-    fetchCategory();
-  };
+
   return (
     <>
       <TableUI<ICategory>
@@ -100,12 +160,23 @@ const FoodCategoryPage = () => {
         data={data}
         loading={loading}
         rowKey="categoryId"
-        extra={
-          <Button onClick={() => setIsOpenCreateModal(true)} type="primary">
+        leftExtra={
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => setIsOpenCreateModal(true)}
+            type="primary"
+          >
             Thêm loại món
           </Button>
         }
-        onReload={handleReload}
+        rightExtra={
+          <TableToolbar
+            onReload={fetchCategory}
+            keyword={keyword}
+            setKeyword={setKeyword}
+            onSearch={handleSearch}
+          />
+        }
       />
       <CategotyModalForm
         formType={EFormType.UPDATE}

@@ -15,18 +15,13 @@ import { NavLink } from "react-router-dom";
 import type { IFood } from "../../services/apis/food/food.interface";
 import { useEffect, useState } from "react";
 import { getFoods } from "../../services/apis/food/food.api";
-
+import type { ICategory } from "../../services/apis/categories/categories.interface";
+import { getCategory } from "../../services/apis/categories/categories.api";
 const { Title, Paragraph } = Typography;
-const titleButtonCategory = [
-  { id: 1, name: "Gà rán" },
-  { id: 2, name: "Burger " },
-  { id: 3, name: "Pizza" },
-  { id: 4, name: "Đồ uống" },
-  { id: 5, name: "Combo" },
-];
-const { Meta } = Card;
+
 const HomePage: React.FC = () => {
-  const [data, setData] = useState<IFood[]>([]);
+  const [foodItems, setFoodItems] = useState<IFood[]>([]);
+  const [category, setCategory] = useState<ICategory[]>([]);
   const [loading, setLoading] = useState(false);
   const clampStyle: React.CSSProperties = {
     display: "-webkit-box",
@@ -34,11 +29,23 @@ const HomePage: React.FC = () => {
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
   };
+  const fecthCategory = async () => {
+    setLoading(true);
+    try {
+      const res = await getCategory();
+      setCategory(res);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fecthCategory();
+  }, []);
   const fetchFood = async () => {
     setLoading(true);
     try {
       const res = await getFoods();
-      setData(res);
+      setFoodItems(res);
     } finally {
       setLoading(false);
     }
@@ -142,50 +149,118 @@ const HomePage: React.FC = () => {
             >
               Tất cả
             </ButtonMain>
-            {titleButtonCategory.map((item) => (
-              <ButtonMain color="danger" variant="outlined" key={item.name}>
-                {item.name}
+            {category.map((item) => (
+              <ButtonMain
+                color="danger"
+                variant="outlined"
+                key={item.categoryName}
+              >
+                {item.categoryName}
               </ButtonMain>
             ))}
           </Flex>
           <div className="flex flex-wrap justify-between gap-6 mt-4">
-            {data.slice(0, 10).map((item) => (
+            {foodItems.slice(0, 10).map((item) => (
+              //menu card
               <Card
                 loading={loading}
                 hoverable
-                style={{ width: 200 }}
-                bodyStyle={{ padding: "20px 12px 5px 12px" }}
+                style={{
+                  width: 220,
+                  borderRadius: 12,
+                  overflow: "hidden",
+                }}
+                bodyStyle={{ padding: 12 }}
                 cover={
-                  <img
-                    style={{ height: 180, objectFit: "cover" }}
-                    draggable={false}
-                    alt="example"
-                    src={item.imageUrl}
-                  />
+                  <div style={{ position: "relative" }}>
+                    <img
+                      src={item.imageUrl}
+                      alt={item.itemName}
+                      draggable={false}
+                      style={{
+                        height: 160,
+                        width: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    {item.discountPercent > 0 && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 8,
+                          left: 8,
+                          background: "#ff4d4f",
+                          color: "#fff",
+                          padding: "2px 6px",
+                          fontSize: 12,
+                          borderRadius: 6,
+                          fontWeight: 600,
+                        }}
+                      >
+                        -{item.discountPercent}%
+                      </span>
+                    )}
+                  </div>
                 }
               >
-                <Meta
-                  title={
-                    <span className="text-lg font-bold">{item.itemName}</span>
-                  }
-                  description={
-                    <div className="text-[13px]" style={clampStyle}>
-                      {item.description}
+                <div
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 15,
+                    marginBottom: 4,
+                    color: "#1f1f1f",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {item.itemName}
+                </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "#8c8c8c",
+                    minHeight: 32,
+                    ...clampStyle,
+                  }}
+                >
+                  {item.description}
+                </div>
+
+                {/* Price + action */}
+                <Flex
+                  justify="space-between"
+                  align="center"
+                  style={{ marginTop: 10 }}
+                >
+                  <div>
+                    {item.discountPercent > 0 && (
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: "#bfbfbf",
+                          textDecoration: "line-through",
+                        }}
+                      >
+                        {item.basePrice.toLocaleString()} đ
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        color: "#ff4d4f",
+                        fontSize: 16,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {item.salePrice.toLocaleString()} đ
                     </div>
-                  }
-                />
-                <Flex justify="space-between" style={{ padding: "18px 0" }}>
-                  <span className="text-[#ff4d4f] text-xl font-bold">
-                    {" "}
-                    {item.salePrice.toLocaleString()} đ
-                  </span>
+                  </div>
+
                   <Button
+                    type="primary"
+                    danger
+                    shape="circle"
                     icon={<ShoppingCartOutlined />}
-                    variant="solid"
-                    color="danger"
-                  >
-                    Thêm
-                  </Button>
+                  />
                 </Flex>
               </Card>
             ))}
