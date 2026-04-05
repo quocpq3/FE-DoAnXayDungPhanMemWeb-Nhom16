@@ -225,12 +225,13 @@ const FoodPage = () => {
           </Button>
         }
         rightExtra={
-          <TableToolbar
-          // onReload={fetchFood}
-          // keyword={keyword}
-          // setKeyword={setKeyword}
-          // onSearch={handleSearch}
-          />
+          // <TableToolbar
+          // // onReload={fetchFood}
+          // // keyword={keyword}
+          // // setKeyword={setKeyword}
+          // // onSearch={handleSearch}
+          // />
+          <h1>Quản lý món ăn</h1>
         }
       />
       <FoodModal
