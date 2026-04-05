@@ -31,3 +31,9 @@ export const updateFood = async (
 export const deleteFood = async (id: number): Promise<void> => {
   await axiosClient.delete(`/api/items/${id}`);
 };
+export const searchFood = async (name: string): Promise<IFood[]> => {
+  const res = await axiosClient.get<ApiResponse<IFood[]>>("/api/items/search", {
+    params: { name },
+  });
+  return res.data.result;
+};
