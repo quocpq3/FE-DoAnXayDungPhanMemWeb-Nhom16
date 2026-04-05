@@ -1,4 +1,13 @@
-import { Avatar, Button, Card, Flex, Image, Rate, Tooltip } from "antd";
+import {
+  Avatar,
+  Button,
+  Card,
+  Flex,
+  Image,
+  Pagination,
+  Rate,
+  Tooltip,
+} from "antd";
 import { Typography } from "antd";
 import ButtonMain from "../../components/buttons/Button";
 import {
@@ -23,12 +32,9 @@ const HomePage: React.FC = () => {
   const [foodItems, setFoodItems] = useState<IFood[]>([]);
   const [category, setCategory] = useState<ICategory[]>([]);
   const [loading, setLoading] = useState(false);
-  const clampStyle: React.CSSProperties = {
-    display: "-webkit-box",
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
-    overflow: "hidden",
-  };
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const fecthCategory = async () => {
     setLoading(true);
     try {
@@ -53,6 +59,13 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     fetchFood();
   }, []);
+  const filterFoods = selectedCategory
+    ? foodItems.filter((item) => item.categoryName === selectedCategory)
+    : foodItems;
+  const pageSize = 10;
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedFoods = filterFoods.slice(startIndex, startIndex + pageSize);
+
   return (
     <>
       <div className="container space-evenly" style={{ paddingTop: "20px" }}>
@@ -137,42 +150,61 @@ const HomePage: React.FC = () => {
           {/*  */}
           <Flex justify="space-between" align="center">
             <Title level={3}>Danh mục món ăn</Title>
-            <span className="font-semibold text-[#ff4d4f]">
-              Xem tất cả <ArrowRightOutlined />
-            </span>
+            <NavLink to="/menu">
+              <span className="font-semibold text-[#ff4d4f]">
+                Xem tất cả <ArrowRightOutlined />
+              </span>
+            </NavLink>
           </Flex>
           <Flex gap={20}>
             <ButtonMain
               icon={<AppstoreOutlined />}
               color="danger"
-              variant="solid"
+              variant={selectedCategory === null ? "solid" : "outlined"}
+              onClick={() => setSelectedCategory(null)}
             >
               Tất cả
             </ButtonMain>
             {category.map((item) => (
               <ButtonMain
                 color="danger"
-                variant="outlined"
+                variant={
+                  selectedCategory === item.categoryName ? "solid" : "outlined"
+                }
                 key={item.categoryName}
+                onClick={() => setSelectedCategory(item.categoryName)}
               >
                 {item.categoryName}
               </ButtonMain>
             ))}
           </Flex>
-          <div className="flex flex-wrap justify-between gap-6 mt-4">
-            {foodItems.slice(0, 10).map((item) => (
-              //menu card
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: 20,
+            }}
+          >
+            {paginatedFoods.map((item) => (
               <Card
+                key={item.itemId}
                 loading={loading}
                 hoverable
                 style={{
-                  width: 220,
-                  borderRadius: 12,
+                  borderRadius: 16,
                   overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "all 0.25s ease",
                 }}
-                bodyStyle={{ padding: 12 }}
+                bodyStyle={{
+                  padding: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  flex: 1,
+                }}
                 cover={
-                  <div style={{ position: "relative" }}>
+                  <div style={{ position: "relative", overflow: "hidden" }}>
                     <img
                       src={item.imageUrl}
                       alt={item.itemName}
@@ -181,20 +213,23 @@ const HomePage: React.FC = () => {
                         height: 160,
                         width: "100%",
                         objectFit: "cover",
+                        transition: "transform 0.3s ease",
                       }}
+                      className="food-img"
                     />
                     {item.discountPercent > 0 && (
                       <span
                         style={{
                           position: "absolute",
-                          top: 8,
-                          left: 8,
-                          background: "#ff4d4f",
+                          top: 10,
+                          left: 10,
+                          background: "linear-gradient(135deg,#ff4d4f,#ff7875)",
                           color: "#fff",
-                          padding: "2px 6px",
+                          padding: "4px 8px",
                           fontSize: 12,
-                          borderRadius: 6,
+                          borderRadius: 8,
                           fontWeight: 600,
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                         }}
                       >
                         -{item.discountPercent}%
@@ -207,9 +242,9 @@ const HomePage: React.FC = () => {
                   style={{
                     fontWeight: 600,
                     fontSize: 15,
-                    marginBottom: 4,
                     color: "#1f1f1f",
                     lineHeight: 1.4,
+                    minHeight: 42,
                   }}
                 >
                   {item.itemName}
@@ -218,31 +253,41 @@ const HomePage: React.FC = () => {
                   style={{
                     fontSize: 12,
                     color: "#8c8c8c",
-                    minHeight: 32,
-                    ...clampStyle,
+                    marginTop: 4,
+                    minHeight: 40,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
                   }}
                 >
                   {item.description}
                 </div>
-
-                {/* Price + action */}
                 <Flex
                   justify="space-between"
-                  align="center"
-                  style={{ marginTop: 10 }}
+                  align="flex-end"
+                  style={{ marginTop: "auto" }}
                 >
-                  <div>
-                    {item.discountPercent > 0 && (
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: "#bfbfbf",
-                          textDecoration: "line-through",
-                        }}
-                      >
-                        {item.basePrice.toLocaleString()} đ
-                      </div>
-                    )}
+                  <div
+                    style={{
+                      minHeight: 38,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "#bfbfbf",
+                        textDecoration: "line-through",
+                        height: 16,
+                        visibility:
+                          item.discountPercent > 0 ? "visible" : "hidden",
+                      }}
+                    >
+                      {item.basePrice.toLocaleString()} đ
+                    </div>
 
                     <div
                       style={{
@@ -265,6 +310,15 @@ const HomePage: React.FC = () => {
               </Card>
             ))}
           </div>
+          <Flex justify="center" style={{ marginTop: 24 }}>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filterFoods.length}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+            />
+          </Flex>
         </Flex>
       </div>
     </>

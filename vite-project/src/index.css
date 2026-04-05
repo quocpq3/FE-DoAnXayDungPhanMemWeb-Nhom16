@@ -11,3 +11,8 @@
 .container.space-evenly {
   justify-content: space-evenly;
 }
+/* reset styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
