@@ -1,4 +1,4 @@
-import { Table, Card, Form, Input, Button, Space } from "antd";
+import { Table, Card } from "antd";
 import type { TableProps } from "antd";
 import type { ReactNode } from "react";
 
@@ -7,11 +7,9 @@ interface Props<T> {
   data: T[];
   loading: boolean;
   rowKey: string;
-  extra?: ReactNode;
 
-  // onSearch?: (values: any) => void;
-  onReset?: () => void;
-  onReload?: () => void;
+  leftExtra?: ReactNode;
+  rightExtra?: ReactNode;
 }
 
 const TableUI = <T extends object>({
@@ -19,22 +17,9 @@ const TableUI = <T extends object>({
   data,
   loading,
   rowKey,
-  // onSearch,
-  onReset,
-  onReload,
-  extra,
+  leftExtra,
+  rightExtra,
 }: Props<T>) => {
-  const [form] = Form.useForm();
-
-  // const handleSearch = (values: any) => {
-  //   onSearch?.(values);
-  // };
-
-  const handleReset = () => {
-    form.resetFields();
-    onReset?.();
-  };
-
   return (
     <Card>
       <div
@@ -47,26 +32,10 @@ const TableUI = <T extends object>({
           gap: 8,
         }}
       >
-        <div>{extra}</div>
-        <Form form={form} layout="inline">
-          {/* <Form form={form} layout="inline" onFinish={handleSearch}> */}
-          <Form.Item name="keyword">
-            <Input placeholder="Tìm kiếm..." allowClear />
-          </Form.Item>
-
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                Tìm kiếm
-              </Button>
-
-              <Button onClick={handleReset}>Reset</Button>
-
-              <Button onClick={onReload}>Reload</Button>
-            </Space>
-          </Form.Item>
-        </Form>
+        <div>{leftExtra}</div>
+        <div>{rightExtra}</div>
       </div>
+
       <Table
         columns={columns}
         dataSource={data}
@@ -78,5 +47,4 @@ const TableUI = <T extends object>({
     </Card>
   );
 };
-
 export default TableUI;

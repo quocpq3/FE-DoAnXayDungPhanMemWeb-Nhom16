@@ -39,3 +39,13 @@ export const updateCategory = async (
 export const deleteCategory = async (id: number): Promise<void> => {
   await axiosClient.delete(`/api/categories/${id}`);
 };
+export const searchCategory = async (name: string): Promise<ICategory[]> => {
+  const res = await axiosClient.get<ApiResponse<ICategory[]>>(
+    "/api/categories/search",
+    {
+      params: { name },
+    },
+  );
+
+  return res.data.result;
+};
