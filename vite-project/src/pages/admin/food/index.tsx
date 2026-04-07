@@ -63,7 +63,7 @@ const FoodPage = () => {
       message.error("Xóa thất bại");
     }
   };
-  const hanleSearch = async () => {
+  const handleSearch = async () => {
     const keywordTrim = keyword.trim();
     if (!keywordTrim) {
       fetchFood();
@@ -253,7 +253,7 @@ const FoodPage = () => {
             onReload={fetchFood}
             keyword={keyword}
             setKeyword={setKeyword}
-            onSearch={hanleSearch}
+            onSearch={handleSearch}
           />
         }
       />
