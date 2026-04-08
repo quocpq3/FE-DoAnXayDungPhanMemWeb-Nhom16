@@ -17,7 +17,7 @@ import {
   faChartLine,
   faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
-import PaymentPage from "../pages/home/payment";
+// import PaymentPage from "../pages/home/payment";
 import OrderPage from "../pages/admin/order";
 
 export interface AppRoute {
@@ -70,11 +70,11 @@ export const routes: AppRoute[] = [
         element: <ContactPage />,
         label: "Liên hệ",
       },
-      {
-        path: "payment",
-        element: <PaymentPage />,
-        label: "Thanh toán",
-      },
+      // {
+      //   path: "payment",
+      //   element: <PaymentPage />,
+      //   label: "Thanh toán",
+      // },
       // {
       //   path: "user-table",
       //   element: <UserTable />,
