@@ -3,7 +3,6 @@ import HomePage from "../pages/home/home";
 import MenuPage from "../pages/home/menu";
 import AboutPage from "../pages/home/about";
 import ContactPage from "../pages/home/contact";
-// import UserTable from "../pages/home/user";
 import AdminLayout from "../layout/admin/AdminLayout";
 import AdminDashboardPage from "../pages/admin/dashboard";
 import LoginLayout from "../layout/auth";
@@ -17,8 +16,8 @@ import {
   faChartLine,
   faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
-// import PaymentPage from "../pages/home/payment";
 import OrderPage from "../pages/admin/order";
+import PaymentPage from "../pages/home/payment";
 
 export interface AppRoute {
   path?: string;
@@ -70,17 +69,12 @@ export const routes: AppRoute[] = [
         element: <ContactPage />,
         label: "Liên hệ",
       },
-      // {
-      //   path: "payment",
-      //   element: <PaymentPage />,
-      //   label: "Thanh toán",
-      // },
-      // {
-      //   path: "user-table",
-      //   element: <UserTable />,
-      //   label: "User Table",
-      // },
     ],
+  },
+  {
+    path: "payment",
+    element: <PaymentPage />,
+    label: "Thanh toán",
   },
   {
     path: "/admin",

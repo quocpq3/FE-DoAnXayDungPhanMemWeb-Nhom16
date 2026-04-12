@@ -1,13 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Card,
-  Flex,
-  Image,
-  Pagination,
-  Rate,
-  Tooltip,
-} from "antd";
+import { Avatar, Button, Flex, Image, Rate, Tooltip } from "antd";
 import { Typography } from "antd";
 import ButtonMain from "../../components/buttons/Button";
 import {
@@ -17,58 +8,27 @@ import {
   UserOutlined,
   ArrowRightOutlined,
   AppstoreOutlined,
-  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import buggerImg from "../../images/banner/Sizzling-Pepperoni-Pizza-Freshly-Baked-Crust-PNG.png";
 import { NavLink } from "react-router-dom";
-import type { IFood } from "../../services/apis/food/food.interface";
-import { useEffect, useState } from "react";
-import { getFoods } from "../../services/apis/food/food.api";
-import type { ICategory } from "../../services/apis/categories/categories.interface";
-import { getCategory } from "../../services/apis/categories/categories.api";
+import FoodCard from "../../components/card/FoodCard";
+import { useFood } from "../../context/FoodContext";
+import { useState } from "react";
+import { filterFoods } from "../../utils/filterFood";
 const { Title, Paragraph } = Typography;
 
 const HomePage: React.FC = () => {
-  const [foodItems, setFoodItems] = useState<IFood[]>([]);
-  const [category, setCategory] = useState<ICategory[]>([]);
-  const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const fecthCategory = async () => {
-    setLoading(true);
-    try {
-      const res = await getCategory();
-      setCategory(res);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fecthCategory();
-  }, []);
-  const fetchFood = async () => {
-    setLoading(true);
-    try {
-      const res = await getFoods();
-      setFoodItems(res);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchFood();
-  }, []);
-  const filterFoods = selectedCategory
-    ? foodItems.filter((item) => item.categoryName === selectedCategory)
-    : foodItems;
-  const pageSize = 10;
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedFoods = filterFoods.slice(startIndex, startIndex + pageSize);
+  const { foods, categories, loading } = useFood();
+  const filteredFoods = filterFoods(foods, selectedCategory);
+  const displayedFoods = filteredFoods.slice(0, 10);
 
   return (
     <>
-      <div className="container space-evenly" style={{ paddingTop: "20px" }}>
+      <div
+        className="container py-12 space-evenly"
+        style={{ paddingTop: "20px" }}
+      >
         <Flex gap={20} vertical>
           {/* banner */}
           <Flex justify="space-evenly">
@@ -165,7 +125,7 @@ const HomePage: React.FC = () => {
             >
               Tất cả
             </ButtonMain>
-            {category.map((item) => (
+            {categories.map((item) => (
               <ButtonMain
                 color="danger"
                 variant={
@@ -185,140 +145,19 @@ const HomePage: React.FC = () => {
               gap: 20,
             }}
           >
-            {paginatedFoods.map((item) => (
-              <Card
-                key={item.itemId}
-                loading={loading}
-                hoverable
-                style={{
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  transition: "all 0.25s ease",
-                }}
-                bodyStyle={{
-                  padding: 12,
-                  display: "flex",
-                  flexDirection: "column",
-                  flex: 1,
-                }}
-                cover={
-                  <div style={{ position: "relative", overflow: "hidden" }}>
-                    <img
-                      src={item.imageUrl}
-                      alt={item.itemName}
-                      draggable={false}
-                      style={{
-                        height: 160,
-                        width: "100%",
-                        objectFit: "cover",
-                        transition: "transform 0.3s ease",
-                      }}
-                      className="food-img"
-                    />
-                    {item.discountPercent > 0 && (
-                      <span
-                        style={{
-                          position: "absolute",
-                          top: 10,
-                          left: 10,
-                          background: "linear-gradient(135deg,#ff4d4f,#ff7875)",
-                          color: "#fff",
-                          padding: "4px 8px",
-                          fontSize: 12,
-                          borderRadius: 8,
-                          fontWeight: 600,
-                          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                        }}
-                      >
-                        -{item.discountPercent}%
-                      </span>
-                    )}
-                  </div>
-                }
-              >
-                <div
-                  style={{
-                    fontWeight: 600,
-                    fontSize: 15,
-                    color: "#1f1f1f",
-                    lineHeight: 1.4,
-                    minHeight: 42,
-                  }}
-                >
-                  {item.itemName}
-                </div>
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "#8c8c8c",
-                    marginTop: 4,
-                    minHeight: 40,
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                  }}
-                >
-                  {item.description}
-                </div>
-                <Flex
-                  justify="space-between"
-                  align="flex-end"
-                  style={{ marginTop: "auto" }}
-                >
-                  <div
-                    style={{
-                      minHeight: 38,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 12,
-                        color: "#bfbfbf",
-                        textDecoration: "line-through",
-                        height: 16,
-                        visibility:
-                          item.discountPercent > 0 ? "visible" : "hidden",
-                      }}
-                    >
-                      {item.basePrice.toLocaleString()} đ
-                    </div>
-
-                    <div
-                      style={{
-                        color: "#ff4d4f",
-                        fontSize: 16,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {item.salePrice.toLocaleString()} đ
-                    </div>
-                  </div>
-
-                  <Button
-                    type="primary"
-                    danger
-                    shape="circle"
-                    icon={<ShoppingCartOutlined />}
-                  />
-                </Flex>
-              </Card>
+            {displayedFoods.map((item) => (
+              <FoodCard key={item.itemId} item={item} loading={loading} />
             ))}
           </div>
-          <Flex justify="center" style={{ marginTop: 24 }}>
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={filterFoods.length}
-              onChange={(page) => setCurrentPage(page)}
-              showSizeChanger={false}
-            />
-          </Flex>
+          {filterFoods.length > 10 && (
+            <Flex justify="center" style={{ marginTop: 24 }}>
+              <NavLink to="/menu">
+                <Button type="primary" danger size="large">
+                  Xem thêm <ArrowRightOutlined />
+                </Button>
+              </NavLink>
+            </Flex>
+          )}
         </Flex>
       </div>
     </>

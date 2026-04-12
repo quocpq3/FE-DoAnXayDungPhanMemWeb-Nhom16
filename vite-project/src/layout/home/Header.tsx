@@ -1,10 +1,12 @@
-import { Button, Drawer, Layout, Menu } from "antd";
+import { Button, Badge, Layout, Menu } from "antd";
 import ButtonMain from "../../components/buttons/Button";
 import Logo from "../../components/logo/Logo";
 import { ShoppingOutlined } from "@ant-design/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import ModalLogin from "./modalLogin";
+import ShoppingCartDrawer from "../../components/cart/ShoppingCartDrawer";
+import { useCart } from "../../hooks/useCart";
 import { type AppRoute } from "../../routes/appRoute";
 import routes from "../../routes/appRoute";
 
@@ -13,7 +15,8 @@ const { Header } = Layout;
 const HeaderLayout: React.FC = () => {
   const location = useLocation();
   const [openModal, setOpenModal] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const { totalItems } = useCart();
 
   const genderMenuItems = (routes: AppRoute[]) => {
     return routes
@@ -28,12 +31,12 @@ const HeaderLayout: React.FC = () => {
       });
   };
 
-  const showDrawer = () => {
-    setOpen(true);
+  const showCart = () => {
+    setCartOpen(true);
   };
 
-  const onClose = () => {
-    setOpen(false);
+  const onCloseCart = () => {
+    setCartOpen(false);
   };
 
   const mainRoutes = routes.find((r) => r.path === "/");
@@ -53,19 +56,20 @@ const HeaderLayout: React.FC = () => {
             style={{ flex: 1 }}
           />
           <div className="flex items-center gap-3">
-            {/* Menu button (mobile) */}
-            <Button
-              icon={<ShoppingOutlined />}
-              onClick={showDrawer}
-              className="flex items-center justify-center md:hidden"
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                border: "1px solid #f0f0f0",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-              }}
-            />
+            {/* Shopping Cart Button */}
+            <Badge count={totalItems} offset={[-5, 5]}>
+              <Button
+                icon={<ShoppingOutlined />}
+                onClick={showCart}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  border: "1px solid #f0f0f0",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                }}
+              />
+            </Badge>
 
             {/* Login button */}
             <ButtonMain onClick={() => setOpenModal(true)} color="danger">
@@ -75,16 +79,7 @@ const HeaderLayout: React.FC = () => {
         </div>
       </Header>
       <ModalLogin open={openModal} setOpen={setOpenModal} />
-      <Drawer
-        title="Basic Drawer"
-        closable={{ "aria-label": "Close Button" }}
-        onClose={onClose}
-        open={open}
-      >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Drawer>
+      <ShoppingCartDrawer open={cartOpen} onClose={onCloseCart} />
     </>
   );
 };
