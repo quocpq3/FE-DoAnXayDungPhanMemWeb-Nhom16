@@ -4,16 +4,15 @@ import {
   MessageOutlined,
   LogoutOutlined,
   SettingOutlined,
-  SunOutlined,
-  MoonOutlined,
   UserOutlined,
   QuestionOutlined,
   BellOutlined,
+  MoonOutlined,
+  SunOutlined,
 } from "@ant-design/icons";
 import { Layout, Button, Dropdown, Input, Flex, Avatar, Switch } from "antd";
 import type { DropdownProps, MenuProps } from "antd";
 import { useEffect, useState, type CSSProperties } from "react";
-import { useTheme } from "../../context/themeContext";
 
 const { Header } = Layout;
 const { Search } = Input;
@@ -56,7 +55,6 @@ const AdminHeader: React.FC<{
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
 }> = ({ collapsed, setCollapsed }) => {
-  const { isDark, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -120,8 +118,6 @@ const AdminHeader: React.FC<{
             type="text"
           />
           <Switch
-            checked={isDark}
-            onClick={toggleTheme}
             checkedChildren={<MoonOutlined />}
             unCheckedChildren={<SunOutlined />}
             defaultChecked
