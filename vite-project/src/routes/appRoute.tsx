@@ -71,6 +71,7 @@ export const routes: AppRoute[] = [
       },
     ],
   },
+
   {
     path: "payment",
     element: <PaymentPage />,
@@ -86,6 +87,7 @@ export const routes: AppRoute[] = [
         label: "Dashboard",
         icon: <FontAwesomeIcon icon={faChartLine} />,
       },
+
       {
         path: "food-category",
         element: <FoodCateGoryPage />,

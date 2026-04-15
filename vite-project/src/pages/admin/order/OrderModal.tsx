@@ -66,21 +66,36 @@ const OrderModal = ({ open, onClose, onSuccess, formType, order }: Props) => {
 
   const itemColumns = [
     {
-      title: "Item ID",
-      dataIndex: "itemId",
+      title: "Hình ảnh",
+      dataIndex: "imageUrl",
+      width: 80,
+      render: (url: string) => (
+        <img
+          src={url}
+          alt="item"
+          style={{ width: 60, height: 60, objectFit: "cover" }}
+        />
+      ),
+    },
+    {
+      title: "Tên món",
+      dataIndex: "itemName",
     },
     {
       title: "Số lượng",
       dataIndex: "quantity",
+      width: 80,
     },
     {
       title: "Đơn giá",
       dataIndex: "unitPrice",
+      width: 120,
       render: (p: number) => p.toLocaleString() + " đ",
     },
     {
       title: "Thành tiền",
       dataIndex: "lineTotal",
+      width: 120,
       render: (p: number) => <b>{p.toLocaleString()} đ</b>,
     },
   ];

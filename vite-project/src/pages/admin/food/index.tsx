@@ -1,6 +1,7 @@
 import {
   App,
   Button,
+  Flex,
   Image,
   Popconfirm,
   Space,
@@ -20,6 +21,9 @@ import {
   CloseCircleOutlined,
   FireOutlined,
   TagsOutlined,
+  AppstoreOutlined,
+  ExclamationCircleOutlined,
+  TagOutlined,
 } from "@ant-design/icons";
 import {
   deleteFood,
@@ -29,6 +33,7 @@ import {
 import FoodModal from "./FoodModal";
 import { EFormType } from "../../../config/enum";
 import TableToolbar from "../../../components/table/TableToolbar";
+import StatsCard from "@/components/card/StatsCard";
 
 const FoodPage = () => {
   const { message } = App.useApp();
@@ -234,29 +239,57 @@ const FoodPage = () => {
   ];
   return (
     <>
-      <TableUI<IFood>
-        columns={columns}
-        data={data}
-        loading={loading}
-        rowKey="itemId"
-        leftExtra={
-          <Button
-            icon={<PlusOutlined />}
-            type="primary"
-            onClick={() => setIsOpenCreateModal(true)}
-          >
-            Thêm món ăn
-          </Button>
-        }
-        rightExtra={
-          <TableToolbar
-            onReload={fetchFood}
-            keyword={keyword}
-            setKeyword={setKeyword}
-            onSearch={handleSearch}
+      <Flex vertical gap={16}>
+        <Flex gap={16}>
+          <StatsCard
+            title="Tổng món ăn"
+            value={data.length}
+            icon={<AppstoreOutlined />}
+            variant="primary"
           />
-        }
-      />
+          <StatsCard
+            title="Đang bán"
+            value={data.filter((f) => f.isAvailable == true).length}
+            icon={<CheckCircleOutlined />}
+            variant="success"
+          />
+          <StatsCard
+            title="Ngừng bán"
+            value={data.filter((f) => f.isAvailable == false).length}
+            icon={<ExclamationCircleOutlined />}
+            variant="warning"
+          />
+          <StatsCard
+            title="Đang giảm giá"
+            value={data.filter((f) => f.discountPercent > 0).length}
+            icon={<TagOutlined />}
+            variant="danger"
+          />
+        </Flex>
+        <TableUI<IFood>
+          columns={columns}
+          data={data}
+          loading={loading}
+          rowKey="itemId"
+          leftExtra={
+            <Button
+              icon={<PlusOutlined />}
+              type="primary"
+              onClick={() => setIsOpenCreateModal(true)}
+            >
+              Thêm món ăn
+            </Button>
+          }
+          rightExtra={
+            <TableToolbar
+              onReload={fetchFood}
+              keyword={keyword}
+              setKeyword={setKeyword}
+              onSearch={handleSearch}
+            />
+          }
+        />
+      </Flex>
       <FoodModal
         formType={EFormType.UPDATE}
         food={selectedFood}
