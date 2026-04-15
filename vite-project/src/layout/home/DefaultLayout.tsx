@@ -8,19 +8,18 @@ const { Content } = Layout;
 
 const App: React.FC = () => {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { borderRadiusLG },
   } = theme.useToken();
 
   return (
     <Layout>
       <HeaderLayout />
-      <Content>
+      <Content style={{ marginTop: "64px" }}>
         {/* <Content style={{ padding: "0 48px" }}> */}
         <div
           style={{
-            background: colorBgContainer,
+            background: "#F8FAFC",
             minHeight: 280,
-            padding: 24,
             borderRadius: borderRadiusLG,
           }}
         >

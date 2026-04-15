@@ -24,7 +24,7 @@ const OrderPage = () => {
   const [loading, setLoading] = useState(false);
 
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
-  const [isOpenDetailModal, setIsOpenDetailModal] = useState(false);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<IOrder>();
 
   const [keyword, setKeyword] = useState("");
@@ -72,77 +72,107 @@ const OrderPage = () => {
     PAID: { color: "green", text: "Đã thanh toán" },
     CANCELLED: { color: "red", text: "Đã hủy" },
     COMPLETED: { color: "blue", text: "Hoàn thành" },
+    PENDING: { color: "orange", text: "Chờ xử lý" },
+  };
+
+  const deliveryMethodMap: Record<string, string> = {
+    DELIVERY: "Giao tận nơi",
+    PICKUP: "Tại quán",
   };
 
   const columns: TableProps<IOrder>["columns"] = [
     {
       title: "Mã đơn",
       dataIndex: "orderCode",
-      width: 180,
+      width: 140,
+      key: "orderCode",
     },
     {
       title: "Khách hàng",
       dataIndex: "customerName",
+      key: "customerName",
     },
     {
       title: "SĐT",
       dataIndex: "customerPhone",
+      width: 120,
+      key: "customerPhone",
     },
     {
       title: "Giao hàng",
       dataIndex: "deliveryMethod",
-      render: (m: string) => (
-        <Tag color="cyan">{m === "DELIVERY" ? "Giao tận nơi" : "Tại quán"}</Tag>
+      width: 120,
+      key: "deliveryMethod",
+      render: (method: string) => (
+        <Tag color="cyan">{deliveryMethodMap[method]}</Tag>
       ),
     },
     {
       title: "Thanh toán",
       dataIndex: "paymentMethod",
-      render: (m: string) => <Tag color="purple">{m}</Tag>,
+      width: 100,
+      key: "paymentMethod",
+      render: (method: string) => <Tag color="purple">{method}</Tag>,
     },
     {
       title: "Trạng thái",
       dataIndex: "orderStatus",
-      render: (s: string) => {
-        const map = statusMap[s];
+      width: 120,
+      key: "orderStatus",
+      render: (status: string) => {
+        const map = statusMap[status];
         return <Tag color={map?.color}>{map?.text}</Tag>;
       },
     },
     {
       title: "Tổng tiền",
       dataIndex: "totalAmount",
-      render: (p: number) => (
-        <b style={{ color: "red" }}>{p.toLocaleString()} đ</b>
+      width: 120,
+      key: "totalAmount",
+      render: (price: number) => (
+        <b style={{ color: "#d32f2f" }}>{price.toLocaleString()} đ</b>
       ),
     },
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
-      render: (d: string) => new Date(d).toLocaleString("vi-VN"),
+      width: 180,
+      key: "createdAt",
+      render: (date: string) => new Date(date).toLocaleString("vi-VN"),
     },
     {
       title: "Hành động",
+      key: "action",
+      width: 100,
       render: (_, record) => (
-        <Space>
+        <Space size="small">
           <Tooltip title="Xem chi tiết">
             <Button
               type="text"
+              size="small"
               icon={<EyeOutlined />}
               onClick={() => {
                 setSelectedOrder(record);
-                setIsOpenDetailModal(true);
+                setIsOpenUpdateModal(true);
               }}
             />
           </Tooltip>
 
           <Popconfirm
             title="Xóa đơn hàng?"
+            description="Bạn chắc chắn muốn xóa đơn hàng này?"
             okText="Xóa"
+            okType="danger"
             cancelText="Hủy"
             onConfirm={() => onDelete(record.orderId)}
           >
             <Tooltip title="Xóa">
-              <Button danger type="text" icon={<DeleteOutlined />} />
+              <Button
+                danger
+                type="text"
+                size="small"
+                icon={<DeleteOutlined />}
+              />
             </Tooltip>
           </Popconfirm>
         </Space>
@@ -189,13 +219,13 @@ const OrderPage = () => {
       <OrderModal
         formType={EFormType.UPDATE}
         order={selectedOrder}
-        open={isOpenDetailModal}
+        open={isOpenUpdateModal}
         onClose={() => {
-          setIsOpenDetailModal(false);
+          setIsOpenUpdateModal(false);
           setSelectedOrder(undefined);
         }}
         onSuccess={() => {
-          setIsOpenDetailModal(false);
+          setIsOpenUpdateModal(false);
           setSelectedOrder(undefined);
           fetchOrders();
         }}
