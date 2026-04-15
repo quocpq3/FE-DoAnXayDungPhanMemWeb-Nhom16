@@ -44,7 +44,19 @@ const HeaderLayout: React.FC = () => {
   const items = genderMenuItems(mainRoutes?.children || []);
   return (
     <>
-      <Header style={{ background: "#fff" }}>
+      <Header
+        style={{
+          background: "#ffffff",
+          borderBottom: "1px solid #f0f0f0",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          height: 64,
+        }}
+      >
         <div className="container space-between">
           <Logo />
           <Menu

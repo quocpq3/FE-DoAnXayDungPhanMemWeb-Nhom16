@@ -17,7 +17,6 @@ import {
   faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import OrderPage from "../pages/admin/order";
-import PaymentPage from "../pages/home/payment";
 
 export interface AppRoute {
   path?: string;
@@ -71,11 +70,7 @@ export const routes: AppRoute[] = [
       },
     ],
   },
-  {
-    path: "payment",
-    element: <PaymentPage />,
-    label: "Thanh toán",
-  },
+
   {
     path: "/admin",
     element: <AdminLayout />,
@@ -86,6 +81,7 @@ export const routes: AppRoute[] = [
         label: "Dashboard",
         icon: <FontAwesomeIcon icon={faChartLine} />,
       },
+
       {
         path: "food-category",
         element: <FoodCateGoryPage />,

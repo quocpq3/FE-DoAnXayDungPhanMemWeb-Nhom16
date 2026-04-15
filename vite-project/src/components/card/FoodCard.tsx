@@ -26,6 +26,8 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
         display: "flex",
         flexDirection: "column",
         transition: "all 0.25s ease",
+        background: "#fff",
+        border: "1px solid #f1f1f1",
       }}
       bodyStyle={{
         padding: 12,

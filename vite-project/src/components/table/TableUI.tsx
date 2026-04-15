@@ -21,7 +21,14 @@ const TableUI = <T extends object>({
   rightExtra,
 }: Props<T>) => {
   return (
-    <Card>
+    <Card
+      style={{
+        borderRadius: 12,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        transition: "all 0.3s ease",
+      }}
+      hoverable
+    >
       <div
         style={{
           display: "flex",

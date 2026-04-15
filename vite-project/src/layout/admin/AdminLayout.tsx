@@ -5,6 +5,7 @@ import AdminSider from "./AdminSider";
 import AdminHeader from "./AdminHeader";
 import { getAdminBreadcrumb } from "../../helper/getAdminBreadcrumb";
 import { getAdminPageTitle } from "../../helper/getAdminPageTitle";
+import { motion } from "framer-motion";
 
 const { Content } = Layout;
 
@@ -47,7 +48,15 @@ const AdminLayout = () => {
               </Divider>
             </Flex>
 
-            <Outlet />
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Outlet />
+            </motion.div>
           </Content>
         </Layout>
       </Layout>

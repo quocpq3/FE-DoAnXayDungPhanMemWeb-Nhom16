@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Popconfirm, Space, Tag, theme, Tooltip } from "antd";
+import { Button, Flex, Popconfirm, Space, Tag, theme, Tooltip } from "antd";
 import TableUI from "../../../components/table/TableUI";
 import type { ICategory } from "../../../services/apis/categories/categories.interface";
 import {
@@ -7,12 +7,23 @@ import {
   deleteCategory,
   searchCategory,
 } from "../../../services/apis/categories/categories.api";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  AppstoreOutlined,
+  CheckCircleOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
+  TagOutlined,
+} from "@ant-design/icons";
 import type { TableProps } from "antd";
 import CategotyModalForm from "./CategoryModalForm";
 import { EFormType } from "../../../config/enum";
 import { App } from "antd";
 import TableToolbar from "../../../components/table/TableToolbar";
+import StatsCard from "@/components/card/StatsCard";
+import { useFood } from "@/context/FoodContext";
+
 const FoodCategoryPage = () => {
   const { message } = App.useApp();
   const [data, setData] = useState<ICategory[]>([]);
@@ -23,6 +34,7 @@ const FoodCategoryPage = () => {
     ICategory | undefined
   >();
   const [keyword, setKeyword] = useState<string>("");
+  const { foods } = useFood();
 
   const fetchCategory = async () => {
     setLoading(true);
@@ -152,32 +164,63 @@ const FoodCategoryPage = () => {
       ),
     },
   ];
-
   return (
     <>
-      <TableUI<ICategory>
-        columns={columns}
-        data={data}
-        loading={loading}
-        rowKey="categoryId"
-        leftExtra={
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => setIsOpenCreateModal(true)}
-            type="primary"
-          >
-            Thêm loại món
-          </Button>
-        }
-        rightExtra={
-          <TableToolbar
-            onReload={fetchCategory}
-            keyword={keyword}
-            setKeyword={setKeyword}
-            onSearch={handleSearch}
+      <Flex vertical gap={16}>
+        <Flex gap={16}>
+          <StatsCard
+            title="Tổng loại món"
+            value={data.length}
+            icon={<AppstoreOutlined />}
+            variant="primary"
           />
-        }
-      />
+          <StatsCard
+            title="Đang hoạt động"
+            value={data.length}
+            icon={<TagOutlined />}
+            variant="success"
+          />
+          <StatsCard
+            title="Ngừng hoạt động"
+            value={0}
+            icon={<ExclamationCircleOutlined />}
+            variant="warning"
+          />
+          <StatsCard
+            title="Đang sử dụng"
+            value={
+              data.filter((cat) =>
+                foods.some((food) => food.categoryId === cat.categoryId),
+              ).length
+            }
+            icon={<CheckCircleOutlined />}
+            variant="danger"
+          />
+        </Flex>
+        <TableUI<ICategory>
+          columns={columns}
+          data={data}
+          loading={loading}
+          rowKey="categoryId"
+          leftExtra={
+            <Button
+              icon={<PlusOutlined />}
+              onClick={() => setIsOpenCreateModal(true)}
+              type="primary"
+            >
+              Thêm loại món
+            </Button>
+          }
+          rightExtra={
+            <TableToolbar
+              onReload={fetchCategory}
+              keyword={keyword}
+              setKeyword={setKeyword}
+              onSearch={handleSearch}
+            />
+          }
+        />
+      </Flex>
       <CategotyModalForm
         formType={EFormType.UPDATE}
         category={selectedCategory}
