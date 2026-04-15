@@ -1,6 +1,6 @@
 import { Avatar, Button, Flex, Rate, Tooltip } from "antd";
 import { Typography } from "antd";
-import ButtonMain from "@/components/buttons/Button";
+import ButtonMain from "../../components/buttons/Button";
 import {
   ShoppingOutlined,
   MenuOutlined,
