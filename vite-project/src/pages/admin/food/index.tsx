@@ -33,7 +33,7 @@ import {
 import FoodModal from "./FoodModal";
 import { EFormType } from "../../../config/enum";
 import TableToolbar from "../../../components/table/TableToolbar";
-import StatsCard from "@/components/card/StatsCard";
+import StatsCard from "../../../components/card/StatsCard";
 
 const FoodPage = () => {
   const { message } = App.useApp();
