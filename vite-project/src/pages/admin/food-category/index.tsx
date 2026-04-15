@@ -21,8 +21,8 @@ import CategotyModalForm from "./CategoryModalForm";
 import { EFormType } from "../../../config/enum";
 import { App } from "antd";
 import TableToolbar from "../../../components/table/TableToolbar";
-import StatsCard from "@/components/card/StatsCard";
-import { useFood } from "@/context/FoodContext";
+import StatsCard from "../../../components/card/StatsCard";
+import { useFood } from "../../../context/FoodContext";
 
 const FoodCategoryPage = () => {
   const { message } = App.useApp();
