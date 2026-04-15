@@ -3,7 +3,7 @@ export interface ICategory {
   categoryName: string;
   slug: string;
   description: string;
-  createAt: Date;
+  createdAt: Date;
 }
 
 export interface ICategoryCreate {

@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { Button, Flex, Popconfirm, Space, Tag, theme, Tooltip } from "antd";
+import { useState } from "react";
+import { Button, Flex, Popconfirm, Space, Tag, Tooltip } from "antd";
 import TableUI from "../../../components/table/TableUI";
 import type { ICategory } from "../../../services/apis/categories/categories.interface";
 import {
-  getCategory,
   deleteCategory,
   searchCategory,
 } from "../../../services/apis/categories/categories.api";
@@ -26,117 +25,96 @@ import { useFood } from "../../../context/FoodContext";
 
 const FoodCategoryPage = () => {
   const { message } = App.useApp();
-  const [data, setData] = useState<ICategory[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
-  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+  const { foods, categories, refresh, loading } = useFood();
+
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<
     ICategory | undefined
   >();
-  const [keyword, setKeyword] = useState<string>("");
-  const { foods } = useFood();
+  const [keyword, setKeyword] = useState("");
+  const [searchData, setSearchData] = useState<ICategory[] | null>(null);
 
-  const fetchCategory = async () => {
-    setLoading(true);
-    try {
-      const res = await getCategory();
-      setData(res);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCategory();
-  }, []);
+  const data = searchData ?? categories;
 
   const onDelete = async (id: number) => {
     try {
       await deleteCategory(id);
-      setData((prev) => prev.filter((i) => i.categoryId !== id));
+      await refresh();
       message.success("Xóa thành công");
     } catch {
       message.error("Xóa thất bại");
     }
   };
+
   const handleSearch = async () => {
     const keywordTrim = keyword.trim();
 
     if (!keywordTrim) {
-      fetchCategory();
+      setSearchData(null);
       return;
     }
 
-    setLoading(true);
     try {
-      const data = await searchCategory(keywordTrim);
-
-      setData(data);
-
-      setKeyword("");
+      const res = await searchCategory(keywordTrim);
+      setSearchData(res);
     } catch {
       message.error("Tìm kiếm thất bại");
-    } finally {
-      setLoading(false);
     }
   };
 
-  const { token } = theme.useToken();
-
   const columns: TableProps<ICategory>["columns"] = [
     {
-      title: "ID",
-      dataIndex: "categoryId",
-      width: 70,
-    },
-    {
-      title: "Tên danh mục",
-      dataIndex: "categoryName",
-      render: (text) => (
-        <span
-          style={{
-            fontWeight: 600,
-            color: token.colorText,
-          }}
-        >
-          {text}
-        </span>
+      title: "Danh mục",
+      render: (_, record) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>
+            {record.categoryName}
+          </div>
+          {/* 
+          <div style={{ fontSize: 12, color: "#888" }}>
+            ID: {record.categoryId}
+          </div> */}
+        </div>
       ),
     },
     {
       title: "Slug",
-      dataIndex: "slug",
-      render: (slug: string) => (
-        <Tag
-          style={{
-            color: token.colorError,
-            backgroundColor: token.colorErrorBg,
-            fontWeight: 500,
-            border: "none",
-          }}
-        >
-          {slug}
-        </Tag>
+      align: "center",
+      render: (_, record) => (
+        <Tag color="gray">{record.slug}</Tag>
       ),
     },
+
     {
       title: "Mô tả",
-      dataIndex: "description",
-      render: (text: string) => (
-        <span style={{ color: token.colorTextSecondary }}>{text || "—"}</span>
-      ),
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      render: (date: string) => (
-        <span style={{ color: token.colorTextSecondary }}>
-          {date ? new Date(date).toLocaleDateString("vi-VN") : "—"}
+      render: (_, record) => (
+        <span style={{ color: "#888" }}>
+          {record.description
+            ? record.description.length > 60
+              ? record.description.slice(0, 60) + "..."
+              : record.description
+            : "—"}
         </span>
       ),
     },
+
+    {
+      title: "Ngày tạo",
+      align: "center",
+      render: (_, record) => (
+        <span style={{ fontSize: 12 }}>
+          {record.createdAt
+            ? new Date(record.createdAt).toLocaleDateString("vi-VN")
+            : "—"}
+        </span>
+      ),
+    },
+
     {
       title: "Hành động",
+      width: 100,
+      align: "center",
       render: (_, record) => (
         <Space>
           <Tooltip title="Chỉnh sửa">
@@ -151,9 +129,7 @@ const FoodCategoryPage = () => {
           </Tooltip>
 
           <Popconfirm
-            title="Xóa loại món ăn?"
-            okText="Xóa"
-            cancelText="Hủy"
+            title="Xóa loại món?"
             onConfirm={() => onDelete(record.categoryId)}
           >
             <Tooltip title="Xóa">
@@ -164,6 +140,7 @@ const FoodCategoryPage = () => {
       ),
     },
   ];
+
   return (
     <>
       <Flex vertical gap={16}>
@@ -190,13 +167,14 @@ const FoodCategoryPage = () => {
             title="Đang sử dụng"
             value={
               data.filter((cat) =>
-                foods.some((food) => food.categoryId === cat.categoryId),
+                foods.some((f) => f.categoryId === cat.categoryId),
               ).length
             }
             icon={<CheckCircleOutlined />}
             variant="danger"
           />
         </Flex>
+
         <TableUI<ICategory>
           columns={columns}
           data={data}
@@ -213,14 +191,18 @@ const FoodCategoryPage = () => {
           }
           rightExtra={
             <TableToolbar
-              onReload={fetchCategory}
               keyword={keyword}
               setKeyword={setKeyword}
               onSearch={handleSearch}
+              onReload={() => {
+                setSearchData(null);
+                refresh();
+              }}
             />
           }
         />
       </Flex>
+
       <CategotyModalForm
         formType={EFormType.UPDATE}
         category={selectedCategory}
@@ -229,20 +211,14 @@ const FoodCategoryPage = () => {
           setIsOpenUpdateModal(false);
           setSelectedCategory(undefined);
         }}
-        onSuccess={() => {
-          setIsOpenUpdateModal(false);
-          setSelectedCategory(undefined);
-          fetchCategory();
-        }}
+        onSuccess={refresh}
       />
+
       <CategotyModalForm
         formType={EFormType.CREATE}
         open={isOpenCreateModal}
         onClose={() => setIsOpenCreateModal(false)}
-        onSuccess={() => {
-          setIsOpenCreateModal(false);
-          fetchCategory();
-        }}
+        onSuccess={refresh}
       />
     </>
   );

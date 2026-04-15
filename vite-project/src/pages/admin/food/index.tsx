@@ -6,256 +6,166 @@ import {
   Popconfirm,
   Space,
   Tag,
-  theme,
-  Tooltip,
   type TableProps,
 } from "antd";
 import TableUI from "../../../components/table/TableUI";
 import type { IFood } from "../../../services/apis/food/food.interface";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
   CheckCircleOutlined,
-  CloseCircleOutlined,
-  FireOutlined,
-  TagsOutlined,
   AppstoreOutlined,
   ExclamationCircleOutlined,
   TagOutlined,
 } from "@ant-design/icons";
-import {
-  deleteFood,
-  getFoods,
-  searchFood,
-} from "../../../services/apis/food/food.api";
+import { deleteFood, searchFood } from "../../../services/apis/food/food.api";
 import FoodModal from "./FoodModal";
 import { EFormType } from "../../../config/enum";
 import TableToolbar from "../../../components/table/TableToolbar";
 import StatsCard from "../../../components/card/StatsCard";
+import { useFood } from "../../../context/FoodContext";
 
 const FoodPage = () => {
   const { message } = App.useApp();
-  const [data, setData] = useState<IFood[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
-  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+  const { foods, refresh, loading } = useFood();
+
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [selectedFood, setSelectedFood] = useState<IFood | undefined>();
+  const [keyword, setKeyword] = useState("");
+  const [searchData, setSearchData] = useState<IFood[] | null>(null);
 
-  const [keyword, setKeyword] = useState<string>("");
+  const data = searchData ?? foods;
 
-  const fetchFood = async () => {
-    setLoading(true);
-    try {
-      const res = await getFoods();
-      setData(res);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    console.log("Fetching foods...");
-    fetchFood();
-  }, []);
+
 
   const onDelete = async (id: number) => {
     try {
       await deleteFood(id);
-      setData((prev) => prev.filter((i) => i.itemId !== id));
+      await refresh();
       message.success("Xóa thành công");
     } catch {
       message.error("Xóa thất bại");
     }
   };
+
   const handleSearch = async () => {
     const keywordTrim = keyword.trim();
+
     if (!keywordTrim) {
-      fetchFood();
+      setSearchData(null);
       return;
     }
-    setLoading(true);
-    try {
-      const data = await searchFood(keywordTrim);
-      setData(data);
 
-      setKeyword("");
+    try {
+      const res = await searchFood(keywordTrim);
+      setSearchData(res);
     } catch {
       message.error("Tìm kiếm thất bại");
-    } finally {
-      setLoading(false);
     }
   };
 
-  const { token } = theme.useToken();
-
   const columns: TableProps<IFood>["columns"] = [
     {
-      title: "ID",
-      dataIndex: "itemId",
-      width: 70,
-    },
-    {
-      title: "Hình ảnh",
-      dataIndex: "imageUrl",
-      width: 100,
-      render: (url?: string) => (
-        <Image
-          src={url || "https://via.placeholder.com/60"}
-          alt="food"
-          preview={true}
-          style={{
-            width: 60,
-            height: 60,
-            objectFit: "cover",
-            borderRadius: 8,
-            border: `1px solid ${token.colorBorder}`,
-          }}
-        />
-      ),
-    },
-    {
-      title: "Tên món",
-      dataIndex: "itemName",
-      render: (text) => (
-        <span style={{ fontWeight: 600, color: token.colorText }}>{text}</span>
-      ),
-    },
-    {
-      title: "Danh mục",
-      dataIndex: "categoryName",
-      render: (name: string) => (
-        <Tag
-          icon={<TagsOutlined />}
-          style={{
-            color: token.colorPrimary,
-            backgroundColor: token.colorPrimaryBg,
-            fontWeight: 500,
-            border: "none",
-          }}
-        >
-          {name}
-        </Tag>
+      title: "Món ăn",
+      render: (_, record) => (
+        <Flex gap={12} align="center">
+          <Image
+            src={record.imageUrl}
+            width={50}
+            height={50}
+            style={{ objectFit: "cover", borderRadius: 8 }}
+          />
+
+          <div>
+            <div style={{ fontWeight: 600 }}>{record.itemName}</div>
+            <div style={{ fontSize: 12, color: "#888" }}>
+              {record.categoryName}
+            </div>
+          </div>
+        </Flex>
       ),
     },
 
     {
-      title: "Giá gốc",
-      dataIndex: "basePrice",
-      render: (price: number) => (
-        <span style={{ color: token.colorTextSecondary }}>
-          {price.toLocaleString()} đ
-        </span>
+      title: "Giá",
+      align: "right",
+      render: (_, record) => (
+        <div>
+          <div style={{ fontWeight: 700, color: "#ff4d4f" }}>
+            {record.salePrice.toLocaleString()} đ
+          </div>
+
+          {record.discountPercent > 0 && (
+            <Tag color="red">-{record.discountPercent}%</Tag>
+          )}
+        </div>
       ),
     },
-    {
-      title: "Giảm giá",
-      dataIndex: "discountPercent",
-      render: (discount: number) => (
-        <Tag
-          icon={<FireOutlined />}
-          style={{
-            color: discount > 0 ? token.colorWarning : token.colorTextSecondary,
-            backgroundColor:
-              discount > 0 ? token.colorWarningBg : token.colorFillSecondary,
-            fontWeight: 500,
-            border: "none",
-          }}
-        >
-          {discount}%
-        </Tag>
-      ),
-    },
-    {
-      title: "Giá bán",
-      dataIndex: "salePrice",
-      render: (price: number) => (
-        <span
-          style={{
-            fontWeight: 700,
-            color: token.colorError,
-          }}
-        >
-          {price.toLocaleString()} đ
-        </span>
-      ),
-    },
+
     {
       title: "Trạng thái",
-      dataIndex: "isAvailable",
-      render: (value: boolean) => (
-        <Tag
-          style={{
-            color: value ? token.colorSuccess : token.colorError,
-            backgroundColor: value ? token.colorSuccessBg : token.colorErrorBg,
-            fontWeight: 500,
-          }}
-          icon={value ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-        >
-          {value ? "Đang bán" : "Ngừng bán"}
-        </Tag>
+      align: "center",
+      render: (_, record) => (
+        <Space direction="vertical" size={0}>
+          <Tag color={record.isAvailable ? "green" : "red"}>
+            {record.isAvailable ? "Đang bán" : "Ngừng bán"}
+          </Tag>
+
+          <Tag color={record.isCombo ? "purple" : "blue"}>
+            {record.isCombo ? "Combo" : "Món lẻ"}
+          </Tag>
+        </Space>
       ),
     },
-    {
-      title: "Loại",
-      dataIndex: "isCombo",
-      render: (value: boolean) => (
-        <Tag
-          color={value ? "#722ed1" : token.colorTextSecondary}
-          style={{ fontWeight: 500 }}
-        >
-          {value ? "Combo" : "Món lẻ"}
-        </Tag>
-      ),
-    },
+
     {
       title: "Hành động",
+      width: 100,
+      align: "center",
       render: (_, record) => (
         <Space>
-          <Tooltip title="Chỉnh sửa">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setSelectedFood(record);
-                setIsOpenUpdateModal(true);
-              }}
-            />
-          </Tooltip>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setSelectedFood(record);
+              setIsOpenUpdateModal(true);
+            }}
+          />
 
           <Popconfirm
-            title="Xóa món ăn?"
-            okText="Xóa"
-            cancelText="Hủy"
+            title="Xóa món?"
             onConfirm={() => onDelete(record.itemId)}
           >
-            <Tooltip title="Xóa">
-              <Button danger type="text" icon={<DeleteOutlined />} />
-            </Tooltip>
+            <Button danger type="text" icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
       ),
     },
   ];
+
   return (
     <>
       <Flex vertical gap={16}>
         <Flex gap={16}>
           <StatsCard
-            title="Tổng món ăn"
+            title="Tổng món"
             value={data.length}
             icon={<AppstoreOutlined />}
             variant="primary"
           />
           <StatsCard
             title="Đang bán"
-            value={data.filter((f) => f.isAvailable == true).length}
+            value={data.filter((f) => f.isAvailable).length}
             icon={<CheckCircleOutlined />}
             variant="success"
           />
           <StatsCard
             title="Ngừng bán"
-            value={data.filter((f) => f.isAvailable == false).length}
+            value={data.filter((f) => !f.isAvailable).length}
             icon={<ExclamationCircleOutlined />}
             variant="warning"
           />
@@ -266,6 +176,7 @@ const FoodPage = () => {
             variant="danger"
           />
         </Flex>
+
         <TableUI<IFood>
           columns={columns}
           data={data}
@@ -277,19 +188,23 @@ const FoodPage = () => {
               type="primary"
               onClick={() => setIsOpenCreateModal(true)}
             >
-              Thêm món ăn
+              Thêm món
             </Button>
           }
           rightExtra={
             <TableToolbar
-              onReload={fetchFood}
               keyword={keyword}
               setKeyword={setKeyword}
               onSearch={handleSearch}
+              onReload={() => {
+                setSearchData(null);
+                refresh();
+              }}
             />
           }
         />
       </Flex>
+
       <FoodModal
         formType={EFormType.UPDATE}
         food={selectedFood}
@@ -298,22 +213,17 @@ const FoodPage = () => {
           setIsOpenUpdateModal(false);
           setSelectedFood(undefined);
         }}
-        onSuccess={() => {
-          setIsOpenUpdateModal(false);
-          setSelectedFood(undefined);
-          fetchFood();
-        }}
+        onSuccess={refresh}
       />
+
       <FoodModal
         formType={EFormType.CREATE}
         open={isOpenCreateModal}
         onClose={() => setIsOpenCreateModal(false)}
-        onSuccess={() => {
-          setIsOpenCreateModal(false);
-          fetchFood();
-        }}
+        onSuccess={refresh}
       />
     </>
   );
 };
+
 export default FoodPage;

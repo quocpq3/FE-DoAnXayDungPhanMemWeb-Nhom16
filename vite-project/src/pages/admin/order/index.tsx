@@ -1,6 +1,7 @@
 import {
   App,
   Button,
+  Flex,
   Popconfirm,
   Space,
   Tag,
@@ -9,13 +10,22 @@ import {
 } from "antd";
 import TableUI from "../../../components/table/TableUI";
 import { useEffect, useState } from "react";
-import { PlusOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  AppstoreOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  DollarCircleOutlined,
+} from "@ant-design/icons";
 
 import type { IOrder } from "../../../services/apis/order/order.interface";
 import { deleteOrder, getOrders } from "../../../services/apis/order/order.api";
 import OrderModal from "./OrderModal";
 import { EFormType } from "../../../config/enum";
 import TableToolbar from "../../../components/table/TableToolbar";
+import StatsCard from "../../../components/card/StatsCard";
 
 const OrderPage = () => {
   const { message } = App.useApp();
@@ -82,74 +92,71 @@ const OrderPage = () => {
 
   const columns: TableProps<IOrder>["columns"] = [
     {
-      title: "Mã đơn",
-      dataIndex: "orderCode",
-      width: 140,
-      key: "orderCode",
-    },
-    {
-      title: "Khách hàng",
-      dataIndex: "customerName",
-      key: "customerName",
-    },
-    {
-      title: "SĐT",
-      dataIndex: "customerPhone",
-      width: 120,
-      key: "customerPhone",
-    },
-    {
-      title: "Giao hàng",
-      dataIndex: "deliveryMethod",
-      width: 120,
-      key: "deliveryMethod",
-      render: (method: string) => (
-        <Tag color="cyan">{deliveryMethodMap[method]}</Tag>
+      title: "Đơn hàng",
+      render: (_, record) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>{record.orderCode}</div>
+
+          <div style={{ fontSize: 12, color: "#888" }}>
+            {new Date(record.createdAt).toLocaleString("vi-VN")}
+          </div>
+        </div>
       ),
     },
+
+    {
+      title: "Khách hàng",
+      render: (_, record) => (
+        <div>
+          <div style={{ fontWeight: 500 }}>{record.customerName}</div>
+          <div style={{ fontSize: 12, color: "#888" }}>
+            {record.customerPhone}
+          </div>
+        </div>
+      ),
+    },
+
     {
       title: "Thanh toán",
-      dataIndex: "paymentMethod",
-      width: 100,
-      key: "paymentMethod",
-      render: (method: string) => <Tag color="purple">{method}</Tag>,
+      align: "center",
+      render: (_, record) => (
+        <Space direction="vertical" size={0}>
+          <Tag color="purple">{deliveryMethodMap[record.deliveryMethod]}</Tag>
+
+          <Tag color="cyan">{record.paymentMethod}</Tag>
+        </Space>
+      ),
     },
+
     {
       title: "Trạng thái",
-      dataIndex: "orderStatus",
-      width: 120,
-      key: "orderStatus",
-      render: (status: string) => {
-        const map = statusMap[status];
+      align: "center",
+      render: (_, record) => {
+        const map = statusMap[record.orderStatus];
+
         return <Tag color={map?.color}>{map?.text}</Tag>;
       },
     },
+
     {
       title: "Tổng tiền",
-      dataIndex: "totalAmount",
-      width: 120,
-      key: "totalAmount",
-      render: (price: number) => (
-        <b style={{ color: "#d32f2f" }}>{price.toLocaleString()} đ</b>
+      align: "right",
+      render: (_, record) => (
+        <div style={{ fontWeight: 700, color: "#ff4d4f" }}>
+          {record.totalAmount.toLocaleString()} đ
+        </div>
       ),
     },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      width: 180,
-      key: "createdAt",
-      render: (date: string) => new Date(date).toLocaleString("vi-VN"),
-    },
+
     {
       title: "Hành động",
-      key: "action",
       width: 100,
+      align: "center",
       render: (_, record) => (
-        <Space size="small">
+        <Space>
           <Tooltip title="Xem chi tiết">
             <Button
               type="text"
-              size="small"
               icon={<EyeOutlined />}
               onClick={() => {
                 setSelectedOrder(record);
@@ -160,20 +167,9 @@ const OrderPage = () => {
 
           <Popconfirm
             title="Xóa đơn hàng?"
-            description="Bạn chắc chắn muốn xóa đơn hàng này?"
-            okText="Xóa"
-            okType="danger"
-            cancelText="Hủy"
             onConfirm={() => onDelete(record.orderId)}
           >
-            <Tooltip title="Xóa">
-              <Button
-                danger
-                type="text"
-                size="small"
-                icon={<DeleteOutlined />}
-              />
-            </Tooltip>
+            <Button danger type="text" icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
       ),
@@ -182,30 +178,62 @@ const OrderPage = () => {
 
   return (
     <>
-      <TableUI<IOrder>
-        columns={columns}
-        data={data}
-        loading={loading}
-        rowKey="orderId"
-        leftExtra={
-          <Button
-            icon={<PlusOutlined />}
-            type="primary"
-            onClick={() => setIsOpenCreateModal(true)}
-          >
-            Tạo đơn hàng
-          </Button>
-        }
-        rightExtra={
-          <TableToolbar
-            keyword={keyword}
-            setKeyword={setKeyword}
-            onSearch={handleSearch}
-            onReload={fetchOrders}
+      <Flex vertical gap={16}>
+        <Flex gap={16}>
+          <StatsCard
+            title="Tổng đơn"
+            value={data.length}
+            icon={<AppstoreOutlined />}
+            variant="primary"
           />
-        }
-      />
-
+          <StatsCard
+            title="Chờ xử lý"
+            value={data.filter((o) => o.orderStatus === "PENDING").length}
+            icon={<ExclamationCircleOutlined />}
+            variant="warning"
+          />
+          <StatsCard
+            title="Hoàn thành"
+            value={data.filter((o) => o.orderStatus === "COMPLETED").length}
+            icon={<CheckCircleOutlined />}
+            variant="success"
+          />
+          <StatsCard
+            title="Doanh thu"
+            value={
+              data
+                .filter((o) => o.orderStatus === "COMPLETED")
+                .reduce((sum, o) => sum + o.totalAmount, 0)
+                .toLocaleString() + " đ"
+            }
+            icon={<DollarCircleOutlined />}
+            variant="danger"
+          />
+        </Flex>
+        <TableUI<IOrder>
+          columns={columns}
+          data={data}
+          loading={loading}
+          rowKey="orderId"
+          leftExtra={
+            <Button
+              icon={<PlusOutlined />}
+              type="primary"
+              onClick={() => setIsOpenCreateModal(true)}
+            >
+              Tạo đơn hàng
+            </Button>
+          }
+          rightExtra={
+            <TableToolbar
+              keyword={keyword}
+              setKeyword={setKeyword}
+              onSearch={handleSearch}
+              onReload={fetchOrders}
+            />
+          }
+        />
+      </Flex>
       <OrderModal
         formType={EFormType.CREATE}
         open={isOpenCreateModal}

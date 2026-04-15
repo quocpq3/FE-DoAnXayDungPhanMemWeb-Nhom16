@@ -10,6 +10,7 @@ import LoginPage from "../pages/auth/login";
 import RegisterPage from "../pages/auth/register";
 import FoodCateGoryPage from "../pages/admin/food-category";
 import FoodPage from "../pages/admin/food";
+import PaymentPage from "../pages/home/payment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPizzaSlice,
@@ -70,7 +71,10 @@ export const routes: AppRoute[] = [
       },
     ],
   },
-
+  {
+    path: "/payment",
+    element: <PaymentPage />
+  },
   {
     path: "/admin",
     element: <AdminLayout />,
