@@ -23,3 +23,22 @@ export interface IOrder {
   createdAt: string;
   items: IOrderItem[];
 }
+export interface IOrderCreate {
+  customerName: string;
+  customerPhone: string;
+  deliveryAddress: string;
+  paymentMethod: string;
+  deliveryMethod: string;
+  note?: string;
+  items: IOrderItemCreate[];
+  totalAmount: number;
+}
+
+export interface IOrderItemCreate {
+  itemId: number;
+  itemName: string;
+  imageUrl?: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
