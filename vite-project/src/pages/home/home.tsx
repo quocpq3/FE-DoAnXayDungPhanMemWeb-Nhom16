@@ -13,8 +13,10 @@ import buggerImg from "../../images/banner/Sizzling-Pepperoni-Pizza-Freshly-Bake
 import { NavLink } from "react-router-dom";
 import FoodCard from "../../components/card/FoodCard";
 import { useFood } from "../../context/FoodContext";
-import { useState } from "react";
+import React, { useState } from "react";
 import { filterFoods } from "../../utils/filterFood";
+import Typewriter from "typewriter-effect";
+
 const { Title, Paragraph } = Typography;
 
 const HomePage: React.FC = () => {
@@ -46,10 +48,22 @@ const HomePage: React.FC = () => {
                   marginBottom: 0,
                 }}
               >
-                Tất cả đồ ăn nhanh <br />
-                đều có sẵn tại <span style={{ color: "#ff4d4f" }}>Foody</span>
+                <span>
+                  <Typewriter
+                    onInit={(typewriter) => {
+                      typewriter
+                        .typeString(
+                          `Tất cả đồ ăn nhanh <br/> đều có sẵn tại <span style="color:#ff4d4f">Foody</span>`,
+                        )
+                        .start();
+                    }}
+                    options={{
+                      delay: 40,
+                      cursor: "|",
+                    }}
+                  />
+                </span>
               </Title>
-
               <Paragraph
                 style={{
                   fontSize: "18px",
@@ -149,7 +163,7 @@ const HomePage: React.FC = () => {
               <FoodCard key={item.itemId} item={item} loading={loading} />
             ))}
           </div>
-          {filterFoods.length > 10 && (
+          {filteredFoods.length > 10 && (
             <Flex justify="center" style={{ marginTop: 24 }}>
               <NavLink to="/menu">
                 <Button type="primary" danger size="large">

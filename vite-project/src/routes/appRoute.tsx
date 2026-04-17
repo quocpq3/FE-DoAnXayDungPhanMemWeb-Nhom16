@@ -10,14 +10,16 @@ import LoginPage from "../pages/auth/login";
 import RegisterPage from "../pages/auth/register";
 import FoodCateGoryPage from "../pages/admin/food-category";
 import FoodPage from "../pages/admin/food";
+import PaymentPage from "../pages/home/payment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPizzaSlice,
   faChartLine,
   faLayerGroup,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import OrderPage from "../pages/admin/order";
-import PaymentPage from "../pages/home/payment";
+import UserPage from "../pages/admin/user";
 
 export interface AppRoute {
   path?: string;
@@ -71,7 +73,10 @@ export const routes: AppRoute[] = [
       },
     ],
   },
-
+  {
+    path: "/payment",
+    element: <PaymentPage />,
+  },
   {
     path: "payment",
     element: <PaymentPage />,
@@ -105,6 +110,12 @@ export const routes: AppRoute[] = [
         element: <OrderPage />,
         label: "Đơn hàng",
         icon: <FontAwesomeIcon icon={faChartLine} />,
+      },
+      {
+        path: "users",
+        element: <UserPage />,
+        label: "Người dùng",
+        icon: <FontAwesomeIcon icon={faUser} />,
       },
     ],
   },
