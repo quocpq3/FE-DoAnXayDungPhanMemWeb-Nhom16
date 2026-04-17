@@ -1,9 +1,10 @@
-import TableUI from "../../../components/table/TableUI";
+// import TableUI from "../../../components/table/TableUI";
 
 const UserPage = () => {
   return (
     <>
-      <TableUI />
+      {/* <TableUI /> */}
+      <h1>hehee</h1>
     </>
   );
 };
