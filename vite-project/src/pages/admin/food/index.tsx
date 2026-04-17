@@ -26,6 +26,7 @@ import { EFormType } from "../../../config/enum";
 import TableToolbar from "../../../components/table/TableToolbar";
 import StatsCard from "../../../components/card/StatsCard";
 import { useFood } from "../../../context/FoodContext";
+import { getTableStats } from "../../../helper/getStatsTable";
 
 const FoodPage = () => {
   const { message } = App.useApp();
@@ -36,10 +37,12 @@ const FoodPage = () => {
   const [selectedFood, setSelectedFood] = useState<IFood | undefined>();
   const [keyword, setKeyword] = useState("");
   const [searchData, setSearchData] = useState<IFood[] | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  const data = searchData ?? foods;
-
-
+  const { data, total, visible, isFiltering } = getTableStats(
+    foods,
+    searchData,
+  );
 
   const onDelete = async (id: number) => {
     try {
@@ -59,12 +62,24 @@ const FoodPage = () => {
       return;
     }
 
+    setSearchLoading(true);
+
     try {
       const res = await searchFood(keywordTrim);
       setSearchData(res);
     } catch {
       message.error("Tìm kiếm thất bại");
+    } finally {
+      setSearchLoading(false);
     }
+  };
+  const handleReset = () => {
+    setKeyword(""); // clear input
+    setSearchData(null); // reset filter
+  };
+
+  const handleReload = async () => {
+    await refresh(); // gọi lại API
   };
 
   const columns: TableProps<IFood>["columns"] = [
@@ -88,7 +103,6 @@ const FoodPage = () => {
         </Flex>
       ),
     },
-
     {
       title: "Giá",
       align: "right",
@@ -104,7 +118,6 @@ const FoodPage = () => {
         </div>
       ),
     },
-
     {
       title: "Trạng thái",
       align: "center",
@@ -120,7 +133,6 @@ const FoodPage = () => {
         </Space>
       ),
     },
-
     {
       title: "Hành động",
       width: 100,
@@ -180,7 +192,7 @@ const FoodPage = () => {
         <TableUI<IFood>
           columns={columns}
           data={data}
-          loading={loading}
+          loading={loading || searchLoading}
           rowKey="itemId"
           leftExtra={
             <Button
@@ -192,15 +204,21 @@ const FoodPage = () => {
             </Button>
           }
           rightExtra={
-            <TableToolbar
-              keyword={keyword}
-              setKeyword={setKeyword}
-              onSearch={handleSearch}
-              onReload={() => {
-                setSearchData(null);
-                refresh();
-              }}
-            />
+            <Flex align="center" gap={12}>
+              {isFiltering && (
+                <span style={{ fontSize: 13, color: "#888" }}>
+                  Hiển thị <b>{visible}</b> / <b>{total}</b> món
+                </span>
+              )}
+
+              <TableToolbar
+                keyword={keyword}
+                setKeyword={setKeyword}
+                onSearch={handleSearch}
+                onReload={handleReload}
+                onReset={handleReset}
+              />
+            </Flex>
           }
         />
       </Flex>

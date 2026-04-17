@@ -1,4 +1,10 @@
-const FoodPage = () => {
-  return <></>;
+import TableUI from "../../../components/table/TableUI";
+
+const UserPage = () => {
+  return (
+    <>
+      <TableUI />
+    </>
+  );
 };
-export default FoodPage;
+export default UserPage;

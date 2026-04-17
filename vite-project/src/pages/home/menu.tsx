@@ -15,9 +15,9 @@ const MenuPage: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
   const { foods, categories, loading } = useFood();
 
-  // Filter foods by category and search
+
   const filteredFoods = filterFoods(foods, selectedCategory, searchValue);
-  // Pagination
+
   const pageSize = 12;
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedFoods = filteredFoods.slice(startIndex, startIndex + pageSize);
@@ -35,7 +35,7 @@ const MenuPage: React.FC = () => {
   return (
     <>
       <div className="">
-        {/* Header Section */}
+
         <div
           className="px-4 py-12 sm:px-6 lg:px-8 "
           style={{ paddingTop: "40px", paddingBottom: "40px" }}
@@ -67,11 +67,9 @@ const MenuPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Content Section */}
       <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <Flex vertical gap={24}>
-            {/* Search Bar */}
             <Flex justify="center" style={{ width: "100%" }}>
               <Input
                 placeholder="Tìm kiếm món ăn..."
@@ -88,7 +86,6 @@ const MenuPage: React.FC = () => {
               />
             </Flex>
 
-            {/* Category Filter */}
             <div
               style={{
                 display: "flex",
@@ -133,8 +130,6 @@ const MenuPage: React.FC = () => {
                 ))}
               </Flex>
             </div>
-
-            {/* Results Count */}
             <div
               style={{ color: "#666", fontSize: "14px", textAlign: "center" }}
             >
@@ -142,8 +137,6 @@ const MenuPage: React.FC = () => {
               <span style={{ fontWeight: 600 }}>{filteredFoods.length}</span>{" "}
               món ăn
             </div>
-
-            {/* Food Items Grid */}
             {paginatedFoods.length > 0 ? (
               <div
                 style={{
@@ -175,8 +168,6 @@ const MenuPage: React.FC = () => {
                 <Button onClick={() => setSearchValue("")}>Xóa tìm kiếm</Button>
               </div>
             )}
-
-            {/* Pagination */}
             {filteredFoods.length > pageSize && (
               <Flex justify="center" style={{ marginTop: 24 }}>
                 <Pagination

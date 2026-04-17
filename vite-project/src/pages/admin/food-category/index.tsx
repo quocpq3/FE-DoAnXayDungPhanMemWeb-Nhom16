@@ -22,6 +22,7 @@ import { App } from "antd";
 import TableToolbar from "../../../components/table/TableToolbar";
 import StatsCard from "../../../components/card/StatsCard";
 import { useFood } from "../../../context/FoodContext";
+import { getTableStats } from "../../../helper/getStatsTable";
 
 const FoodCategoryPage = () => {
   const { message } = App.useApp();
@@ -34,8 +35,12 @@ const FoodCategoryPage = () => {
   >();
   const [keyword, setKeyword] = useState("");
   const [searchData, setSearchData] = useState<ICategory[] | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  const data = searchData ?? categories;
+  const { data, total, visible, isFiltering } = getTableStats(
+    categories,
+    searchData,
+  );
 
   const onDelete = async (id: number) => {
     try {
@@ -55,12 +60,24 @@ const FoodCategoryPage = () => {
       return;
     }
 
+    setSearchLoading(true);
+
     try {
       const res = await searchCategory(keywordTrim);
       setSearchData(res);
     } catch {
       message.error("Tìm kiếm thất bại");
+    } finally {
+      setSearchLoading(false);
     }
+  };
+  const handleReset = () => {
+    setKeyword(""); // clear input
+    setSearchData(null); // reset filter
+  };
+
+  const handleReload = async () => {
+    await refresh(); // gọi lại API
   };
 
   const columns: TableProps<ICategory>["columns"] = [
@@ -68,9 +85,7 @@ const FoodCategoryPage = () => {
       title: "Danh mục",
       render: (_, record) => (
         <div>
-          <div style={{ fontWeight: 600 }}>
-            {record.categoryName}
-          </div>
+          <div style={{ fontWeight: 600 }}>{record.categoryName}</div>
           {/* 
           <div style={{ fontSize: 12, color: "#888" }}>
             ID: {record.categoryId}
@@ -81,9 +96,7 @@ const FoodCategoryPage = () => {
     {
       title: "Slug",
       align: "center",
-      render: (_, record) => (
-        <Tag color="gray">{record.slug}</Tag>
-      ),
+      render: (_, record) => <Tag color="gray">{record.slug}</Tag>,
     },
 
     {
@@ -178,7 +191,7 @@ const FoodCategoryPage = () => {
         <TableUI<ICategory>
           columns={columns}
           data={data}
-          loading={loading}
+          loading={loading || searchLoading}
           rowKey="categoryId"
           leftExtra={
             <Button
@@ -190,15 +203,20 @@ const FoodCategoryPage = () => {
             </Button>
           }
           rightExtra={
-            <TableToolbar
-              keyword={keyword}
-              setKeyword={setKeyword}
-              onSearch={handleSearch}
-              onReload={() => {
-                setSearchData(null);
-                refresh();
-              }}
-            />
+            <Flex align="center" gap={12}>
+              {isFiltering && (
+                <span style={{ fontSize: 13, color: "#888" }}>
+                  Hiển thị <b>{visible}</b> / <b>{total}</b> loại món
+                </span>
+              )}
+              <TableToolbar
+                keyword={keyword}
+                setKeyword={setKeyword}
+                onSearch={handleSearch}
+                onReload={handleReload}
+                onReset={handleReset}
+              />
+            </Flex>
           }
         />
       </Flex>

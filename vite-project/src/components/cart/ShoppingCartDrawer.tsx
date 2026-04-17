@@ -2,6 +2,7 @@ import { Button, Drawer, Empty, Flex, Input } from "antd";
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCart } from "../../hooks/useCart";
 import { Typography } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -14,6 +15,7 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
   open,
   onClose,
 }) => {
+  const navigate = useNavigate();
   const {
     cartItems,
     removeFromCart,
@@ -174,7 +176,7 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
                             )
                           }
                           style={{
-                            width: 40,
+                            width: 60,
                             textAlign: "center",
                             border: "none",
                             fontSize: 12,
@@ -262,7 +264,13 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
               <Button onClick={clearCart} style={{ flex: 1 }}>
                 Xóa tất cả
               </Button>
-              <Button type="primary" danger size="large" style={{ flex: 1 }}>
+              <Button
+                onClick={() => navigate("payment")}
+                type="primary"
+                danger
+                size="large"
+                style={{ flex: 1 }}
+              >
                 Thanh toán
               </Button>
             </Flex>

@@ -13,13 +13,16 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
   const { message } = App.useApp();
 
   const handleAddToCart = () => {
+    if (!item.isAvailable) return;
+
     addToCart(item, 1);
     message.success(`${item.itemName} đã được thêm vào giỏ hàng`);
   };
+
   return (
     <Card
       loading={loading}
-      hoverable
+      hoverable={item.isAvailable}
       style={{
         borderRadius: 16,
         overflow: "hidden",
@@ -28,6 +31,8 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
         transition: "all 0.25s ease",
         background: "#fff",
         border: "1px solid #f1f1f1",
+        opacity: item.isAvailable ? 1 : 0.6, // 👈 mờ khi ngừng bán
+        cursor: item.isAvailable ? "pointer" : "not-allowed",
       }}
       bodyStyle={{
         padding: 12,
@@ -48,7 +53,6 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
               transition: "transform 0.3s ease",
             }}
           />
-
           {item.discountPercent > 0 && (
             <span
               style={{
@@ -85,10 +89,27 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
               Combo
             </span>
           )}
+          {!item.isAvailable && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "rgba(0,0,0,0.5)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: 16,
+                backdropFilter: "blur(2px)",
+              }}
+            >
+              Ngừng bán
+            </div>
+          )}
         </div>
       }
     >
-      {/* NAME */}
       <div
         style={{
           fontWeight: 600,
@@ -100,8 +121,6 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
       >
         {item.itemName}
       </div>
-
-      {/* DESCRIPTION */}
       <div
         style={{
           fontSize: 12,
@@ -117,8 +136,6 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
       >
         {item.description}
       </div>
-
-      {/* CATEGORY */}
       <div
         style={{
           fontSize: 11,
@@ -128,8 +145,6 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
       >
         {item.categoryName}
       </div>
-
-      {/* PRICE + BUTTON */}
       <Flex
         justify="space-between"
         align="flex-end"
@@ -165,6 +180,10 @@ const FoodCard: React.FC<Props> = ({ item, loading }) => {
           icon={<ShoppingCartOutlined />}
           disabled={!item.isAvailable}
           onClick={handleAddToCart}
+          style={{
+            opacity: item.isAvailable ? 1 : 0.5,
+            cursor: item.isAvailable ? "pointer" : "not-allowed",
+          }}
         />
       </Flex>
     </Card>

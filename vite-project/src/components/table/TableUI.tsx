@@ -7,7 +7,6 @@ interface Props<T> {
   data: T[];
   loading: boolean;
   rowKey: string;
-
   leftExtra?: ReactNode;
   rightExtra?: ReactNode;
 }
