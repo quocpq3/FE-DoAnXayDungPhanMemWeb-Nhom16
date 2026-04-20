@@ -78,7 +78,6 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
         </div>
       ) : (
         <>
-          {/* Cart Items */}
           <div
             style={{
               flex: 1,
@@ -100,7 +99,6 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
                     border: "1px solid #f0f0f0",
                   }}
                 >
-                  {/* Image */}
                   <img
                     src={item.imageUrl}
                     alt={item.itemName}
@@ -111,8 +109,6 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
                       borderRadius: 6,
                     }}
                   />
-
-                  {/* Item Details */}
                   <div
                     style={{
                       flex: 1,
@@ -145,8 +141,6 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
                         {item.description}
                       </Text>
                     </div>
-
-                    {/* Quantity & Price */}
                     <Flex justify="space-between" align="center">
                       <div
                         style={{
@@ -219,8 +213,6 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
               ))}
             </Flex>
           </div>
-
-          {/* Summary & Checkout */}
           <div
             style={{
               padding: 16,
@@ -228,15 +220,12 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
               borderTop: "1px solid #f0f0f0",
             }}
           >
-            {/* Subtotal */}
             <Flex justify="space-between" style={{ marginBottom: 12 }}>
               <Text>Tạm tính:</Text>
               <Text style={{ fontSize: 14, fontWeight: 600 }}>
                 {totalAmount.toLocaleString()} đ
               </Text>
             </Flex>
-
-            {/* Shipping (example) */}
             <Flex
               justify="space-between"
               style={{
@@ -248,8 +237,6 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
               <Text>Phí vận chuyển:</Text>
               <Text style={{ fontSize: 14 }}>Miễn phí</Text>
             </Flex>
-
-            {/* Total */}
             <Flex justify="space-between" style={{ marginBottom: 16 }}>
               <Title level={5} style={{ marginBottom: 0 }}>
                 Tổng cộng:
@@ -258,14 +245,12 @@ const ShoppingCartDrawer: React.FC<ShoppingCartDrawerProps> = ({
                 {totalAmount.toLocaleString()} đ
               </Title>
             </Flex>
-
-            {/* Buttons */}
             <Flex gap={12}>
               <Button onClick={clearCart} style={{ flex: 1 }}>
                 Xóa tất cả
               </Button>
               <Button
-                onClick={() => navigate("payment")}
+                onClick={() => navigate("order-confirmation")}
                 type="primary"
                 danger
                 size="large"

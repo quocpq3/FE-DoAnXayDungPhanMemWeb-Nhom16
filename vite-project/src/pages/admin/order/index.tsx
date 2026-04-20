@@ -1,29 +1,20 @@
-import {
-  App,
-  Button,
-  Flex,
-  Popconfirm,
-  Space,
-  Tag,
-  Tooltip,
-  type TableProps,
-} from "antd";
+import { App, Button, Flex, Space, Tag, Tooltip, type TableProps } from "antd";
 import TableUI from "../../../components/table/TableUI";
 import { useEffect, useState } from "react";
 import {
-  PlusOutlined,
   EyeOutlined,
-  DeleteOutlined,
-  AppstoreOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   DollarCircleOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 
-import type { IOrder } from "../../../services/apis/order/order.interface";
-import { deleteOrder, getOrders } from "../../../services/apis/order/order.api";
+import type {
+  IOrder,
+  IOrderCreate,
+} from "../../../services/apis/order/order.interface";
+import { getOrders, updateOrder } from "../../../services/apis/order/order.api";
 import OrderModal from "./OrderModal";
-import { EFormType } from "../../../config/enum";
 import TableToolbar from "../../../components/table/TableToolbar";
 import StatsCard from "../../../components/card/StatsCard";
 
@@ -33,9 +24,8 @@ const OrderPage = () => {
   const [data, setData] = useState<IOrder[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
-  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<IOrder>();
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const [keyword, setKeyword] = useState("");
 
@@ -53,124 +43,132 @@ const OrderPage = () => {
     fetchOrders();
   }, []);
 
-  const onDelete = async (id: number) => {
+  const mapOrderToUpdate = (record: IOrder): IOrderCreate => ({
+    customerName: record.customerName,
+    customerPhone: record.customerPhone,
+    deliveryAddress: record.deliveryAddress,
+    paymentMethod: record.paymentMethod,
+    deliveryMethod: record.deliveryMethod,
+    note: record.note,
+    totalAmount: record.totalAmount,
+    items: record.items.map((i) => ({
+      itemId: i.itemId,
+      itemName: i.itemName,
+      quantity: i.quantity,
+      unitPrice: i.unitPrice,
+      lineTotal: i.lineTotal,
+    })),
+  });
+
+  const handleUpdateStatus = async (record: IOrder, status: string) => {
+    const oldData = [...data];
+    setData((prev) =>
+      prev.map((o) =>
+        o.orderId === record.orderId ? { ...o, orderStatus: status } : o,
+      ),
+    );
+
     try {
-      await deleteOrder(id);
-      setData((prev) => prev.filter((i) => i.orderId !== id));
-      message.success("Xóa thành công");
+      await updateOrder(record.orderId, {
+        ...mapOrderToUpdate(record),
+        orderStatus: status,
+      });
     } catch {
-      message.error("Xóa thất bại");
+      setData(oldData);
+      message.error("Cập nhật thất bại");
     }
-  };
-
-  const handleSearch = () => {
-    const keywordTrim = keyword.trim();
-
-    if (!keywordTrim) {
-      fetchOrders();
-      return;
-    }
-
-    const filtered = data.filter((o) => o.orderCode.includes(keywordTrim));
-
-    setData(filtered);
-    setKeyword("");
-  };
-
-  const statusMap: Record<string, { color: string; text: string }> = {
-    PENDING_PAYMENT: { color: "orange", text: "Chờ thanh toán" },
-    PAID: { color: "green", text: "Đã thanh toán" },
-    CANCELLED: { color: "red", text: "Đã hủy" },
-    COMPLETED: { color: "blue", text: "Hoàn thành" },
-    PENDING: { color: "orange", text: "Chờ xử lý" },
-  };
-
-  const deliveryMethodMap: Record<string, string> = {
-    DELIVERY: "Giao tận nơi",
-    PICKUP: "Tại quán",
   };
 
   const columns: TableProps<IOrder>["columns"] = [
     {
       title: "Đơn hàng",
-      render: (_, record) => (
+      render: (_, r) => (
         <div>
-          <div style={{ fontWeight: 600 }}>{record.orderCode}</div>
-
-          <div style={{ fontSize: 12, color: "#888" }}>
-            {new Date(record.createdAt).toLocaleString("vi-VN")}
+          <b>{r.orderCode}</b>
+          <div style={{ fontSize: 12 }}>
+            {new Date(r.createdAt).toLocaleString("vi-VN")}
           </div>
         </div>
       ),
     },
-
     {
       title: "Khách hàng",
-      render: (_, record) => (
+      render: (_, r) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{record.customerName}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>
-            {record.customerPhone}
-          </div>
+          <b>{r.customerName}</b>
+          <div style={{ fontSize: 12 }}>{r.customerPhone}</div>
         </div>
       ),
     },
-
     {
       title: "Thanh toán",
-      align: "center",
-      render: (_, record) => (
+      render: (_, r) => (
         <Space direction="vertical" size={0}>
-          <Tag color="purple">{deliveryMethodMap[record.deliveryMethod]}</Tag>
-
-          <Tag color="cyan">{record.paymentMethod}</Tag>
+          <Tag color="purple">
+            {r.deliveryMethod === "DELIVERY" ? "Giao tận nơi" : "Tại quán"}
+          </Tag>
+          <Tag color="cyan">
+            {r.paymentMethod === "CASH" ? "Tiền mặt" : "Chuyển khoản"}
+          </Tag>
         </Space>
       ),
     },
-
     {
       title: "Trạng thái",
-      align: "center",
-      render: (_, record) => {
-        const map = statusMap[record.orderStatus];
+      render: (_, r) => {
+        const map = {
+          PENDING: { color: "orange", text: "Chờ xử lý" },
+          PAID: { color: "green", text: "Đã thanh toán" },
+          COMPLETED: { color: "blue", text: "Hoàn thành" },
+          CANCELLED: { color: "red", text: "Đã hủy" },
+        }[r.orderStatus];
 
         return <Tag color={map?.color}>{map?.text}</Tag>;
       },
     },
-
-    {
-      title: "Tổng tiền",
-      align: "right",
-      render: (_, record) => (
-        <div style={{ fontWeight: 700, color: "#ff4d4f" }}>
-          {record.totalAmount.toLocaleString()} đ
-        </div>
-      ),
-    },
-
     {
       title: "Hành động",
-      width: 100,
-      align: "center",
-      render: (_, record) => (
+      render: (_, r) => (
         <Space>
           <Tooltip title="Xem chi tiết">
             <Button
               type="text"
               icon={<EyeOutlined />}
               onClick={() => {
-                setSelectedOrder(record);
-                setIsOpenUpdateModal(true);
+                setSelectedOrder(r);
+                setIsOpenModal(true);
               }}
             />
           </Tooltip>
+          {r.orderStatus === "PENDING" && (
+            <>
+              <Tooltip title="Đã thanh toán">
+                <Button
+                  type="text"
+                  icon={<DollarCircleOutlined style={{ color: "green" }} />}
+                  onClick={() => handleUpdateStatus(r, "PAID")}
+                />
+              </Tooltip>
 
-          <Popconfirm
-            title="Xóa đơn hàng?"
-            onConfirm={() => onDelete(record.orderId)}
-          >
-            <Button danger type="text" icon={<DeleteOutlined />} />
-          </Popconfirm>
+              <Tooltip title="Hủy đơn">
+                <Button
+                  type="text"
+                  danger
+                  icon={<ExclamationCircleOutlined />}
+                  onClick={() => handleUpdateStatus(r, "CANCELLED")}
+                />
+              </Tooltip>
+            </>
+          )}
+          {r.orderStatus === "PAID" && (
+            <Tooltip title="Hoàn thành">
+              <Button
+                type="text"
+                icon={<CheckCircleOutlined style={{ color: "blue" }} />}
+                onClick={() => handleUpdateStatus(r, "COMPLETED")}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -179,35 +177,31 @@ const OrderPage = () => {
   return (
     <>
       <Flex vertical gap={16}>
-        <Flex gap={16}>
+        <Flex gap={12}>
           <StatsCard
+            icon={<AppstoreOutlined />}
             title="Tổng đơn"
             value={data.length}
-            icon={<AppstoreOutlined />}
             variant="primary"
           />
           <StatsCard
+            icon={<ExclamationCircleOutlined />}
             title="Chờ xử lý"
             value={data.filter((o) => o.orderStatus === "PENDING").length}
-            icon={<ExclamationCircleOutlined />}
             variant="warning"
           />
           <StatsCard
-            title="Hoàn thành"
-            value={data.filter((o) => o.orderStatus === "COMPLETED").length}
-            icon={<CheckCircleOutlined />}
+            icon={<DollarCircleOutlined />}
+            title="Đã thanh toán"
+            value={data.filter((o) => o.orderStatus === "PAID").length}
             variant="success"
           />
+
           <StatsCard
-            title="Doanh thu"
-            value={
-              data
-                .filter((o) => o.orderStatus === "COMPLETED")
-                .reduce((sum, o) => sum + o.totalAmount, 0)
-                .toLocaleString() + " đ"
-            }
-            icon={<DollarCircleOutlined />}
-            variant="danger"
+            icon={<CheckCircleOutlined />}
+            title="Hoàn thành"
+            value={data.filter((o) => o.orderStatus === "COMPLETED").length}
+            variant="success"
           />
         </Flex>
         <TableUI<IOrder>
@@ -215,48 +209,21 @@ const OrderPage = () => {
           data={data}
           loading={loading}
           rowKey="orderId"
-          leftExtra={
-            <Button
-              icon={<PlusOutlined />}
-              type="primary"
-              onClick={() => setIsOpenCreateModal(true)}
-            >
-              Tạo đơn hàng
-            </Button>
-          }
           rightExtra={
             <TableToolbar
               keyword={keyword}
               setKeyword={setKeyword}
-              onSearch={handleSearch}
+              onSearch={() => {}}
               onReload={fetchOrders}
             />
           }
         />
       </Flex>
-      <OrderModal
-        formType={EFormType.CREATE}
-        open={isOpenCreateModal}
-        onClose={() => setIsOpenCreateModal(false)}
-        onSuccess={() => {
-          setIsOpenCreateModal(false);
-          fetchOrders();
-        }}
-      />
 
       <OrderModal
-        formType={EFormType.UPDATE}
+        open={isOpenModal}
         order={selectedOrder}
-        open={isOpenUpdateModal}
-        onClose={() => {
-          setIsOpenUpdateModal(false);
-          setSelectedOrder(undefined);
-        }}
-        onSuccess={() => {
-          setIsOpenUpdateModal(false);
-          setSelectedOrder(undefined);
-          fetchOrders();
-        }}
+        onClose={() => setIsOpenModal(false)}
       />
     </>
   );
