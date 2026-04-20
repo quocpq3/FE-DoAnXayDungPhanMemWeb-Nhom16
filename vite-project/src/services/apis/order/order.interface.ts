@@ -7,7 +7,7 @@ export interface IOrderItem {
   unitPrice: number;
   lineTotal: number;
 }
-
+export type PaymentMethod = "CASH" | "BANK_TRANSFER";
 export interface IOrder {
   orderId: number;
   orderCode: string;
@@ -16,7 +16,7 @@ export interface IOrder {
   customerPhone: string;
   deliveryAddress: string;
   orderStatus: string;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
   deliveryMethod: string;
   totalAmount: number;
   note: string;
@@ -32,6 +32,7 @@ export interface IOrderCreate {
   note?: string;
   items: IOrderItemCreate[];
   totalAmount: number;
+  orderStatus?: string;
 }
 
 export interface IOrderItemCreate {
@@ -41,4 +42,13 @@ export interface IOrderItemCreate {
   quantity: number;
   unitPrice: number;
   lineTotal: number;
+}
+
+export interface ICheckoutForm {
+  fullName: string;
+  phone: string;
+  email?: string;
+  address: string;
+  note?: string;
+  paymentMethod: "cod" | "vnpay";
 }
