@@ -10,7 +10,7 @@ import LoginPage from "../pages/auth/login";
 import RegisterPage from "../pages/auth/register";
 import FoodCateGoryPage from "../pages/admin/food-category";
 import FoodPage from "../pages/admin/food";
-import PaymentPage from "../pages/home/payment";
+import PaymentPage from "../pages/home/order/payment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPizzaSlice,
@@ -20,6 +20,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import OrderPage from "../pages/admin/order";
 import UserPage from "../pages/admin/user";
+import OrderConfirmationPage from "../pages/home/order/orderconfirmation";
 
 export interface AppRoute {
   path?: string;
@@ -74,7 +75,11 @@ export const routes: AppRoute[] = [
     ],
   },
   {
-    path: "/payment",
+    path: "/order-confirmation",
+    element: <OrderConfirmationPage />,
+  },
+  {
+    path: "/payment/:id",
     element: <PaymentPage />,
   },
   {
