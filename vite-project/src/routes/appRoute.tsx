@@ -83,6 +83,11 @@ export const routes: AppRoute[] = [
     element: <PaymentPage />,
   },
   {
+    path: "payment",
+    element: <PaymentPage />,
+    label: "Thanh toán",
+  },
+  {
     path: "/admin",
     element: <AdminLayout />,
     children: [
