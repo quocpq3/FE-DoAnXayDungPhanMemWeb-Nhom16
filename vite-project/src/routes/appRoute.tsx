@@ -16,10 +16,8 @@ import {
   faPizzaSlice,
   faChartLine,
   faLayerGroup,
-  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import OrderPage from "../pages/admin/order";
-import UserPage from "../pages/admin/user";
 import OrderConfirmationPage from "../pages/home/order/orderconfirmation";
 
 export interface AppRoute {
@@ -115,12 +113,6 @@ export const routes: AppRoute[] = [
         element: <OrderPage />,
         label: "Đơn hàng",
         icon: <FontAwesomeIcon icon={faChartLine} />,
-      },
-      {
-        path: "users",
-        element: <UserPage />,
-        label: "Người dùng",
-        icon: <FontAwesomeIcon icon={faUser} />,
       },
     ],
   },
