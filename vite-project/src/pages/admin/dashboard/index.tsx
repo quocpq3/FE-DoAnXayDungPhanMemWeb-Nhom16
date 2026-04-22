@@ -37,7 +37,6 @@ import {
 } from "recharts";
 
 import { useFood } from "../../../context/FoodContext";
-import { useUser } from "../../../context/UserRolesContext";
 import { useOrder } from "../../../context/OrderContext";
 import type { IOrderItem } from "../../../services/apis/order/order.interface";
 
@@ -111,7 +110,6 @@ const columns = [
 
 const AdminDashboardPage = () => {
   const { foods, loading: foodLoading } = useFood();
-  const { users, loading: userLoading } = useUser();
   const { orders, loading: orderLoading } = useOrder();
 
   //thống kê món ăn đang hoạt động
@@ -193,7 +191,7 @@ const AdminDashboardPage = () => {
   }, [orders]);
 
   // loading
-  const loading = foodLoading || userLoading || orderLoading;
+  const loading = foodLoading || orderLoading;
 
   return (
     <Spin spinning={loading}>
@@ -222,7 +220,7 @@ const AdminDashboardPage = () => {
 
           <StatsCard
             title="Khách hàng"
-            value={users.length}
+            value={orders.length}
             icon={<UserOutlined />}
             variant="purple"
           />
