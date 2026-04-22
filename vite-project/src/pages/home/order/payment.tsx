@@ -52,7 +52,7 @@ const PaymentPage = () => {
       message.success(
         isCash
           ? "Bạn sẽ thanh toán khi nhận hàng"
-          : "Đã ghi nhận chuyển khoản. Nhân viên sẽ kiểm tra và liên hệ bạn",
+          : "Đã ghi nhận chuyển khoản. Nhân viên sẽ kiểm tra và liên hệ bạn"
       );
 
       navigate("/");
@@ -78,6 +78,7 @@ const PaymentPage = () => {
           {isCash ? "Tiền mặt khi nhận hàng" : "Chuyển khoản ngân hàng"}
         </Tag>
       </Flex>
+
       <Card
         bordered={false}
         style={{
@@ -93,11 +94,11 @@ const PaymentPage = () => {
         <Flex vertical gap={6}>
           <Flex justify="space-between">
             <Text type="secondary">Họ tên</Text>
-            <Text strong>{order.customerName}</Text>
+            <Text strong>{order.userName || "Khách vãng lai"}</Text>
           </Flex>
           <Flex justify="space-between">
             <Text type="secondary">Số điện thoại</Text>
-            <Text>{order.customerPhone}</Text>
+            <Text>{order.userPhone || "—"}</Text>
           </Flex>
           <Flex justify="space-between">
             <Text type="secondary">Địa chỉ</Text>
@@ -113,6 +114,7 @@ const PaymentPage = () => {
           )}
         </Flex>
       </Card>
+
       <Card
         bordered={false}
         style={{
@@ -165,6 +167,7 @@ const PaymentPage = () => {
           </Text>
         </Flex>
       </Card>
+
       <Card
         bordered={false}
         style={{ borderRadius: 12, border: "1px solid #f0f0f0" }}
@@ -267,8 +270,8 @@ const PaymentPage = () => {
               style={{
                 borderRadius: 8,
                 minWidth: 200,
-                background: confirmed ? "#52c41a" : "#52c41a",
-                borderColor: confirmed ? "#52c41a" : "#52c41a",
+                background: confirmed ? "#52c41a" : undefined,
+                borderColor: confirmed ? "#52c41a" : undefined,
               }}
             >
               {confirmed ? "Đã ghi nhận ✓" : "Tôi đã chuyển khoản"}
