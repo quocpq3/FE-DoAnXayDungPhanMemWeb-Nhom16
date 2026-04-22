@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   deleteUser,
   searchUser,
 } from "../../../services/apis/user/user.api";
 
-import type { IUser, IRole } from "../../../services/apis/user/user.interface";
+import type { IUser } from "../../../services/apis/user/user.interface";
 
 import TableUI from "../../../components/table/TableUI";
 import TableToolbar from "../../../components/table/TableToolbar";
