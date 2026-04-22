@@ -12,8 +12,8 @@ export interface IOrder {
   orderId: number;
   orderCode: string;
   userId: number | null;
-  userName: string | null;
-  userPhone: string | null;
+  customerName: string | null;
+  customerPhone: string | null;
   deliveryAddress: string;
   orderStatus: string;
   paymentMethod: PaymentMethod;
@@ -26,8 +26,8 @@ export interface IOrder {
 export interface IOrderCreate {
   userId?: number | null;
   orderCode?: string;
-  userName: string | null;
-  userPhone: string | null;
+  customerName: string | null;
+  customerPhone: string | null;
   deliveryAddress: string;
   paymentMethod: string;
   deliveryMethod: string;

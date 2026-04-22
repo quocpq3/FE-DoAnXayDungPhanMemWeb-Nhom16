@@ -33,8 +33,8 @@ const OrderPage = () => {
 
 
   const mapOrderToUpdate = (record: IOrder): IOrderCreate => ({
-    userName: record.userName || "",
-    userPhone: record.userPhone || "",
+    customerName: record.customerName || "",
+    customerPhone: record.customerPhone || "",
     deliveryAddress: record.deliveryAddress,
     paymentMethod: record.paymentMethod,
     deliveryMethod: record.deliveryMethod,
@@ -75,11 +75,14 @@ const OrderPage = () => {
     },
     {
       title: "Khách hàng",
-      dataIndex: "userName",
-      render: (name: string) => (
+      dataIndex: "customerName",
+      render: (name: string, record: IOrder) => (
         <Flex align="center" gap={8}>
           <Avatar size={30} icon={<UserOutlined />} />
-          <Text style={{ fontSize: 13 }}>{name || "Khách vãng lai"}</Text>
+          <Flex vertical>
+            <Text style={{ fontSize: 13, fontWeight: 500 }}>{name || "Khách vãng lai"}</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{record.customerPhone || "—"}</Text>
+          </Flex>
         </Flex>
       ),
     },

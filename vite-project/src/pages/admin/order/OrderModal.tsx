@@ -58,10 +58,10 @@ const OrderModal = ({ open, onClose, order }: Props) => {
           </Col>
 
           <Col span={12}>
-            <b>Khách hàng:</b> {order.userName || "Khách vãng lai"}
+            <b>Khách hàng:</b> {order.customerName || "Khách vãng lai"}
           </Col>
           <Col span={12}>
-            <b>SĐT:</b> {order.userPhone || "—"}
+            <b>SĐT:</b> {order.customerPhone || "—"}
           </Col>
 
           <Col span={24}>
