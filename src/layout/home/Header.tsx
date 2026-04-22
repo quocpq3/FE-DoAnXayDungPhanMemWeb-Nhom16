@@ -3,7 +3,7 @@ import ButtonMain from "../../components/buttons/Button";
 import Logo from "../../components/logo/Logo";
 import { ShoppingOutlined } from "@ant-design/icons";
 import { NavLink, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalLogin from "./modalLogin";
 import ShoppingCartDrawer from "../../components/cart/ShoppingCartDrawer";
 import { useCart } from "../../hooks/useCart";
@@ -18,7 +18,28 @@ const HeaderLayout: React.FC = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    try {
+      const raw = localStorage.getItem("user");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    const onStorageChange = () => {
+      try {
+        const raw = localStorage.getItem("user");
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener("storage", onStorageChange);
+    return () => window.removeEventListener("storage", onStorageChange);
+  }, []);
 
   const genderMenuItems = (routes: AppRoute[]) => {
     return routes
@@ -97,6 +118,7 @@ const HeaderLayout: React.FC = () => {
                   onClick={() => {
                     setUser(null);
                     localStorage.removeItem("token");
+                    localStorage.removeItem("user");
               }}
               color="blue"
             > 

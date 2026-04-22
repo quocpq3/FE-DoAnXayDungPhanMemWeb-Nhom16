@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, Checkbox, Flex, Form, Input, Modal, Typography, message } from "antd";
 import { login, register } from "../../../services/apis/user/user.api";
+import { getCurrentRoles } from "../../../helper/auth";
 
 interface ModalLoginProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  setUser?: (user: { email?: string; name?: string }) => void;
+  setUser?: (user: { email?: string; name?: string; roles?: string[] }) => void;
 }
 
 type LoginFormValues = {
@@ -49,6 +50,7 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ open, setOpen, setUser }) => {
       const user = {
         name: data?.user?.name ?? values.email,
         email: data?.user?.email ?? values.email,
+        roles: data?.user?.roles ?? getCurrentRoles(),
       };
 
       setUser?.(user);

@@ -21,6 +21,7 @@ import {
 import OrderPage from "../pages/admin/order";
 import UserPage from "../pages/admin/user";
 import OrderConfirmationPage from "../pages/home/order/orderconfirmation";
+import RequireAdmin from "./RequireAdmin";
 
 export interface AppRoute {
   path?: string;
@@ -118,7 +119,11 @@ export const routes: AppRoute[] = [
       },
       {
         path: "users",
-        element: <UserPage />,
+        element: (
+          <RequireAdmin>
+            <UserPage />
+          </RequireAdmin>
+        ),
         label: "Người dùng",
         icon: <FontAwesomeIcon icon={faUser} />,
       },

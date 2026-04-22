@@ -1,5 +1,12 @@
 import axiosClient from "../axiosClient";
-import type { ApiResponse, IUser, IUserCreate, ILoginRequest, ILoginResponse } from "./user.interface";
+import type {
+  ApiResponse,
+  IUser,
+  IUserCreate,
+  IUserUpdate,
+  ILoginRequest,
+  ILoginResponse,
+} from "./user.interface";
 
 const getBackendError = (error: any) => {
   const data = error?.response?.data;
@@ -12,6 +19,13 @@ const getBackendError = (error: any) => {
       "Lỗi không xác định",
   };
 };
+
+const normalizeRoleForRequest = (role: string): string => {
+  const clean = role.replace(/^(ROLE_)+/i, "").toUpperCase();
+  return `ROLE_${clean}`;
+};
+
+const hasRoles = (roles?: string[]) => Array.isArray(roles) && roles.length > 0;
 
 export const getUsers = async (): Promise<IUser[]> => {
   const res = await axiosClient.get<ApiResponse<IUser[]>>("/users");
@@ -28,9 +42,63 @@ export const createUser = async (data: IUserCreate): Promise<IUser> => {
   return res.data.result;
 };
 
-export const updateUser = async (id: number, data: IUserCreate): Promise<IUser> => {
+export const updateUser = async (id: number, data: IUserUpdate): Promise<IUser> => {
   const res = await axiosClient.put<ApiResponse<IUser>>(`/users/${id}`, data);
   return res.data.result;
+};
+
+export const updateUserRoles = async (
+  user: IUser,
+  roles: string[]
+): Promise<IUser> => {
+  const normalizedRoles = roles.map(normalizeRoleForRequest);
+  const fallbackRoles = normalizedRoles.map((role) => role.replace(/^ROLE_/, ""));
+
+  try {
+    const updated = await updateUser(user.id, {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      roles: normalizedRoles,
+    });
+
+    // Some backends return success but ignore role updates when role name format is mismatched.
+    // If user selected roles but response has no roles, retry with stripped role names.
+    if (normalizedRoles.length > 0 && !hasRoles(updated.roles)) {
+      return updateUser(user.id, {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        roles: fallbackRoles,
+      });
+    }
+
+    return updated;
+  } catch (primaryError: any) {
+    // Some backend datasets store role names as ADMIN/USER instead of ROLE_ADMIN/ROLE_USER.
+    // Retry with stripped names to maximize compatibility.
+    const fallbackUpdated = await updateUser(user.id, {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      roles: fallbackRoles,
+    });
+
+    if (fallbackRoles.length > 0 && !hasRoles(fallbackUpdated.roles)) {
+      return updateUser(user.id, {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        roles: normalizedRoles,
+      });
+    }
+
+    return fallbackUpdated;
+  }
 };
 
 export const deleteUser = async (id: number): Promise<void> => {

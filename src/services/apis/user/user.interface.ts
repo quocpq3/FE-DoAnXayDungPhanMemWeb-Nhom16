@@ -4,6 +4,7 @@ export interface IUser {
   email?: string;
   phone?: string;
   address?: string;
+  roles?: string[];
 }
 
 export interface ApiResponse<T> {
@@ -17,6 +18,14 @@ export interface IUserCreate {
   email: string;
   phone?: string;
   address?: string;
+}
+
+export interface IUserUpdate {
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  roles: string[];
 }
 
 export interface ILoginRequest {
