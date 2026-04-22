@@ -1,38 +1,39 @@
 export interface IUser {
   id: number;
   name: string;
-  phone?: string | null;
-  address?: string | null;
-  email?: string | null;
-
-  roles: string[];
-}
-
-export interface IUserCreate {
-  name: string;
+  email?: string;
   phone?: string;
   address?: string;
-  email?: string;
-  password: string;
-
-  roles: string[];
-}
-
-export interface IUserUpdate {
-  name: string;
-  phone?: string;
-  address?: string;
-  email?: string;
-
-  roles: string[];
-}
-
-export interface IRole {
-  id: number;
-  name: string;
+  roles?: string[];
 }
 
 export interface ApiResponse<T> {
   code: number;
   result: T;
+}
+
+export interface IUserCreate {
+  name: string;
+  password: string;
+  email: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface IUserUpdate {
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  roles: string[];
+}
+
+export interface ILoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface ILoginResponse {
+  token: string;
+  authenticated: boolean;
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Form,
@@ -26,10 +26,10 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { CartContext } from "../../../context/CartContext";
 import type { IFood } from "../../../services/apis/food/food.interface";
-import type {
-  ICheckoutForm,
-  IOrderCreate,
-  IOrderItemCreate,
+import {
+  type ICheckoutForm,
+  type IOrderCreate,
+  type IOrderItemCreate,
 } from "../../../services/apis/order/order.interface";
 import { createOrder } from "../../../services/apis/order/order.api";
 
@@ -45,7 +45,6 @@ const OrderConfirmationPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { message } = App.useApp();
 
   const [form] = Form.useForm();
@@ -66,7 +65,6 @@ const OrderConfirmationPage: React.FC = () => {
           quantity: item.quantity,
           unitPrice: item.salePrice,
           lineTotal: item.salePrice * item.quantity,
-          imageUrl: item.imageUrl,
         }),
       );
 
@@ -75,25 +73,22 @@ const OrderConfirmationPage: React.FC = () => {
         customerPhone: values.phone,
         deliveryAddress: values.address,
         note: values.note || "",
-        paymentMethod: values.paymentMethod === "cod" ? "CASH" : "BANK_TRANSFER",
+        paymentMethod:
+          values.paymentMethod === "cod" ? "CASH" : "BANK_TRANSFER",
         deliveryMethod: "DELIVERY",
         totalAmount: finalTotal,
         items,
       };
 
       const res = await createOrder(payload);
-
       form.resetFields();
       cartContext?.clearCart?.();
-
       const isCash = payload.paymentMethod === "CASH";
-
       if (isCash) {
         message.success("Đặt hàng thành công");
         navigate("/");
         return;
       }
-
       message.success("Đơn hàng đã tạo, vui lòng thanh toán");
       navigate(`/payment/${res.orderId}`);
     } catch (error) {
@@ -115,23 +110,46 @@ const OrderConfirmationPage: React.FC = () => {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        transition={{
+          duration: 0.4,
+          ease: "easeOut",
+        }}
       >
-        <div style={{ padding: "32px 16px 60px", maxWidth: 1200, margin: "0 auto" }}>
+        <div
+          style={{
+            padding: "32px 16px 60px",
+            maxWidth: 1200,
+            margin: "0 auto",
+          }}
+        >
           <Row gutter={[24, 24]}>
             <Col xs={24} lg={15}>
-              <Card bordered={false} style={{ borderRadius: 16, border: "1px solid #f0f0f0" }} bodyStyle={{ padding: 24 }}>
+              <Card
+                bordered={false}
+                style={{
+                  borderRadius: 16,
+                  border: "1px solid #f0f0f0",
+                }}
+                bodyStyle={{ padding: 24 }}
+              >
                 <Title level={4} style={{ marginBottom: 24, fontWeight: 700 }}>
                   1. Thông tin giao hàng
                 </Title>
 
-                <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false}>
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={onFinish}
+                  requiredMark={false}
+                >
                   <Row gutter={16}>
                     <Col xs={24} sm={12}>
                       <Form.Item
                         label={<Text strong>Họ và tên</Text>}
                         name="fullName"
-                        rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
+                        rules={[
+                          { required: true, message: "Vui lòng nhập họ tên!" },
+                        ]}
                       >
                         <Input size="large" style={{ borderRadius: 8 }} />
                       </Form.Item>
@@ -141,7 +159,9 @@ const OrderConfirmationPage: React.FC = () => {
                       <Form.Item
                         label={<Text strong>Số điện thoại</Text>}
                         name="phone"
-                        rules={[{ required: true, message: "Vui lòng nhập SĐT!" }]}
+                        rules={[
+                          { required: true, message: "Vui lòng nhập SĐT!" },
+                        ]}
                       >
                         <Input size="large" style={{ borderRadius: 8 }} />
                       </Form.Item>
@@ -159,7 +179,9 @@ const OrderConfirmationPage: React.FC = () => {
                   <Form.Item
                     label={<Text strong>Địa chỉ</Text>}
                     name="address"
-                    rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập địa chỉ!" },
+                    ]}
                   >
                     <Input size="large" style={{ borderRadius: 8 }} />
                   </Form.Item>
@@ -170,14 +192,22 @@ const OrderConfirmationPage: React.FC = () => {
 
                   <Divider style={{ margin: "24px 0" }} />
 
-                  <Title level={4} style={{ marginBottom: 20, fontWeight: 700 }}>
+                  <Title
+                    level={4}
+                    style={{ marginBottom: 20, fontWeight: 700 }}
+                  >
                     2. Thanh toán
                   </Title>
 
                   <Form.Item name="paymentMethod" initialValue="cod">
                     <Radio.Group style={{ width: "100%" }}>
                       <Space direction="vertical" style={{ width: "100%" }}>
-                        <Card size="small" hoverable style={{ borderRadius: 12 }} bodyStyle={{ padding: 16 }}>
+                        <Card
+                          size="small"
+                          hoverable
+                          style={{ borderRadius: 12 }}
+                          bodyStyle={{ padding: 16 }}
+                        >
                           <Radio value="cod" style={{ width: "100%" }}>
                             <Flex justify="space-between">
                               <Text>Thanh toán khi nhận hàng</Text>
@@ -186,7 +216,12 @@ const OrderConfirmationPage: React.FC = () => {
                           </Radio>
                         </Card>
 
-                        <Card size="small" hoverable style={{ borderRadius: 12 }} bodyStyle={{ padding: 16 }}>
+                        <Card
+                          size="small"
+                          hoverable
+                          style={{ borderRadius: 12 }}
+                          bodyStyle={{ padding: 16 }}
+                        >
                           <Radio value="vnpay" style={{ width: "100%" }}>
                             <Flex justify="space-between">
                               <Text>Thanh toán VNPay</Text>
@@ -222,7 +257,12 @@ const OrderConfirmationPage: React.FC = () => {
                 <List
                   dataSource={cartItems}
                   renderItem={(item: IFood & { quantity: number }) => (
-                    <List.Item style={{ padding: "12px 0", borderBottom: "1px dashed #f0f0f0" }}>
+                    <List.Item
+                      style={{
+                        padding: "12px 0",
+                        borderBottom: "1px dashed #f0f0f0",
+                      }}
+                    >
                       <List.Item.Meta
                         avatar={
                           <Badge count={item.quantity}>
@@ -235,7 +275,11 @@ const OrderConfirmationPage: React.FC = () => {
                           </Badge>
                         }
                         title={<Text strong>{item.itemName}</Text>}
-                        description={<Text type="secondary">{item.salePrice.toLocaleString()} đ</Text>}
+                        description={
+                          <Text type="secondary">
+                            {item.salePrice.toLocaleString()} đ
+                          </Text>
+                        }
                       />
                       <Text strong>
                         {(item.salePrice * item.quantity).toLocaleString()} đ
@@ -247,7 +291,8 @@ const OrderConfirmationPage: React.FC = () => {
                 <div style={{ marginTop: 20 }}>
                   <Flex justify="space-between" style={{ marginBottom: 8 }}>
                     <Text type="secondary">
-                      Tạm tính ({cartItems.reduce((a, b) => a + b.quantity, 0)} món)
+                      Tạm tính ({cartItems.reduce((a, b) => a + b.quantity, 0)}{" "}
+                      món)
                     </Text>
                     <Text>{displayTotal.toLocaleString()} đ</Text>
                   </Flex>
@@ -272,7 +317,12 @@ const OrderConfirmationPage: React.FC = () => {
                     size="large"
                     block
                     loading={isLoading}
-                    style={{ marginTop: 16, height: 52, borderRadius: 10, fontWeight: 600 }}
+                    style={{
+                      marginTop: 16,
+                      height: 52,
+                      borderRadius: 10,
+                      fontWeight: 600,
+                    }}
                     icon={<CheckCircleOutlined />}
                     onClick={() => form.submit()}
                   >
