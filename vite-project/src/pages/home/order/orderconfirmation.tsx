@@ -71,8 +71,8 @@ const OrderConfirmationPage: React.FC = () => {
       );
 
       const payload: IOrderCreate = {
-        userName: values.fullName,
-        userPhone: values.phone,
+        customerName: values.fullName,
+        customerPhone: values.phone,
         deliveryAddress: values.address,
         note: values.note || "",
         paymentMethod: values.paymentMethod === "cod" ? "CASH" : "BANK_TRANSFER",
