@@ -1,5 +1,11 @@
 import axiosClient from "../axiosClient";
-import type { ApiResponse, IUser, IUserCreate } from "./user.interface";
+import type {
+  ApiResponse,
+  IUser,
+  IUserCreate,
+  IUserUpdate,
+  IRole,
+} from "./user.interface";
 
 export const getUsers = async (): Promise<IUser[]> => {
   const res = await axiosClient.get<ApiResponse<IUser[]>>("/users");
@@ -18,7 +24,7 @@ export const createUser = async (data: IUserCreate): Promise<IUser> => {
 
 export const updateUser = async (
   id: number,
-  data: IUserCreate,
+  data: IUserUpdate,
 ): Promise<IUser> => {
   const res = await axiosClient.put<ApiResponse<IUser>>(`/users/${id}`, data);
   return res.data.result;
@@ -26,4 +32,17 @@ export const updateUser = async (
 
 export const deleteUser = async (id: number): Promise<void> => {
   await axiosClient.delete(`/users/${id}`);
+};
+
+export const searchUser = async (keyword: string): Promise<IUser[]> => {
+  const res = await axiosClient.get<ApiResponse<IUser[]>>(
+    `/users/search?keyword=${encodeURIComponent(keyword)}`,
+  );
+  return res.data.result;
+};
+
+// roles
+export const getRoles = async (): Promise<IRole[]> => {
+  const res = await axiosClient.get<ApiResponse<IRole[]>>("/roles");
+  return res.data.result;
 };
