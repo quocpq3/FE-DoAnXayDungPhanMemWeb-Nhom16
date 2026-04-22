@@ -3,7 +3,7 @@ import ButtonMain from "../../components/buttons/Button";
 import Logo from "../../components/logo/Logo";
 import { ShoppingOutlined } from "@ant-design/icons";
 import { NavLink, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalLogin from "./modalLogin";
 import ShoppingCartDrawer from "../../components/cart/ShoppingCartDrawer";
 import { useCart } from "../../hooks/useCart";
@@ -17,6 +17,29 @@ const HeaderLayout: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
+
+  const [user, setUser] = useState<any>(() => {
+    try {
+      const raw = localStorage.getItem("user");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    const onStorageChange = () => {
+      try {
+        const raw = localStorage.getItem("user");
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener("storage", onStorageChange);
+    return () => window.removeEventListener("storage", onStorageChange);
+  }, []);
 
   const genderMenuItems = (routes: AppRoute[]) => {
     return routes
@@ -40,8 +63,8 @@ const HeaderLayout: React.FC = () => {
   };
 
   const mainRoutes = routes.find((r) => r.path === "/");
-
   const items = genderMenuItems(mainRoutes?.children || []);
+
   return (
     <>
       <Header
@@ -59,6 +82,7 @@ const HeaderLayout: React.FC = () => {
       >
         <div className="container space-between">
           <Logo />
+
           <Menu
             className="justify-center font-semibold"
             mode="horizontal"
@@ -67,8 +91,8 @@ const HeaderLayout: React.FC = () => {
             items={items}
             style={{ flex: 1 }}
           />
+
           <div className="flex items-center gap-3">
-            {/* Shopping Cart Button */}
             <Badge count={totalItems} offset={[-5, 5]}>
               <Button
                 icon={<ShoppingOutlined />}
@@ -82,15 +106,35 @@ const HeaderLayout: React.FC = () => {
                 }}
               />
             </Badge>
-
-            {/* Login button */}
-            <ButtonMain onClick={() => setOpenModal(true)} color="danger">
-              Đăng nhập
+            {!user && (
+              <ButtonMain onClick={() => setOpenModal(true)} color="danger">
+                Đăng nhập
+              </ButtonMain>
+            )}
+            {user && (
+              <>
+                <span>Xin chào {user.name || user.email}</span>
+                <ButtonMain
+                  onClick={() => {
+                    setUser(null);
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+              }}
+              color="blue"
+            > 
+            Đăng xuất
             </ButtonMain>
+              </>
+            )}
           </div>
         </div>
       </Header>
-      <ModalLogin open={openModal} setOpen={setOpenModal} />
+      <ModalLogin
+        open={openModal}
+        setOpen={setOpenModal}
+        setUser={setUser}
+      />
+
       <ShoppingCartDrawer open={cartOpen} onClose={onCloseCart} />
     </>
   );

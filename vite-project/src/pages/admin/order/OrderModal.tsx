@@ -48,6 +48,7 @@ const OrderModal = ({ open, onClose, order }: Props) => {
       width={900}
       title="CHI TIẾT ĐƠN HÀNG"
     >
+      {/* 🔥 Thông tin dạng bảng */}
       <div style={{ background: "#fafafa", padding: 16, borderRadius: 8 }}>
         <Row gutter={[16, 12]}>
           <Col span={12}>
@@ -58,10 +59,10 @@ const OrderModal = ({ open, onClose, order }: Props) => {
           </Col>
 
           <Col span={12}>
-            <b>Khách hàng:</b> {order.customerName || "Khách vãng lai"}
+            <b>Khách hàng:</b> {order.customerName}
           </Col>
           <Col span={12}>
-            <b>SĐT:</b> {order.customerPhone || "—"}
+            <b>SĐT:</b> {order.customerPhone}
           </Col>
 
           <Col span={24}>
@@ -80,8 +81,8 @@ const OrderModal = ({ open, onClose, order }: Props) => {
 
           <Col span={12}>
             <b>Trạng thái:</b>{" "}
-            <Tag color={statusMap[order.orderStatus]?.color}>
-              {statusMap[order.orderStatus]?.text}
+            <Tag color={statusMap[order.orderStatus].color}>
+              {statusMap[order.orderStatus].text}
             </Tag>
           </Col>
 
@@ -93,6 +94,7 @@ const OrderModal = ({ open, onClose, order }: Props) => {
 
       <Divider>Danh sách món</Divider>
 
+      {/* 🔥 Table món */}
       <Table
         dataSource={order.items}
         columns={itemColumns}
@@ -102,6 +104,7 @@ const OrderModal = ({ open, onClose, order }: Props) => {
 
       <Divider />
 
+      {/* 🔥 Tổng tiền */}
       <Row justify="end">
         <h2 style={{ color: "#ff4d4f" }}>
           Tổng: {order.totalAmount.toLocaleString()} đ

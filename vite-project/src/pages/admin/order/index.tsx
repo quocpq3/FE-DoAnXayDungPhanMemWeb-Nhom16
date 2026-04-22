@@ -1,40 +1,51 @@
-import { App, Avatar, Button, Flex, Space, Tag, Tooltip, Typography, type TableProps } from "antd";
+import { App, Button, Flex, Space, Tag, Tooltip, type TableProps } from "antd";
 import TableUI from "../../../components/table/TableUI";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   EyeOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   DollarCircleOutlined,
-  ShoppingCartOutlined,
-  UserOutlined,
-  ClockCircleOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 
 import type {
   IOrder,
   IOrderCreate,
 } from "../../../services/apis/order/order.interface";
-import { updateOrder } from "../../../services/apis/order/order.api";
+import { getOrders, updateOrder } from "../../../services/apis/order/order.api";
 import OrderModal from "./OrderModal";
 import TableToolbar from "../../../components/table/TableToolbar";
-import { useOrder } from "../../../context/OrderContext";
 import StatsCard from "../../../components/card/StatsCard";
 
 const OrderPage = () => {
   const { message } = App.useApp();
-  const { Text } = Typography;
-  const { orders, loading, refresh: fetchOrders } = useOrder();
+
+  const [data, setData] = useState<IOrder[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [selectedOrder, setSelectedOrder] = useState<IOrder>();
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const [keyword, setKeyword] = useState("");
 
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await getOrders();
+      setData(res);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const mapOrderToUpdate = (record: IOrder): IOrderCreate => ({
-    customerName: record.customerName || "",
-    customerPhone: record.customerPhone || "",
+    customerName: record.customerName,
+    customerPhone: record.customerPhone,
     deliveryAddress: record.deliveryAddress,
     paymentMethod: record.paymentMethod,
     deliveryMethod: record.deliveryMethod,
@@ -46,64 +57,60 @@ const OrderPage = () => {
       quantity: i.quantity,
       unitPrice: i.unitPrice,
       lineTotal: i.lineTotal,
-      imageUrl: i.imageUrl,
     })),
   });
 
   const handleUpdateStatus = async (record: IOrder, status: string) => {
+    const oldData = [...data];
+    setData((prev) =>
+      prev.map((o) =>
+        o.orderId === record.orderId ? { ...o, orderStatus: status } : o,
+      ),
+    );
+
     try {
       await updateOrder(record.orderId, {
         ...mapOrderToUpdate(record),
         orderStatus: status,
       });
-      message.success("Cập nhật trạng thái thành công");
-      await fetchOrders();
     } catch {
+      setData(oldData);
       message.error("Cập nhật thất bại");
     }
   };
 
   const columns: TableProps<IOrder>["columns"] = [
     {
-      title: "Mã đơn",
-      dataIndex: "orderCode",
-      render: (code: string) => (
-        <Text strong style={{ fontSize: 13, color: "#1677ff" }}>
-          {code}
-        </Text>
+      title: "Đơn hàng",
+      render: (_, r) => (
+        <div>
+          <b>{r.orderCode}</b>
+          <div style={{ fontSize: 12 }}>
+            {new Date(r.createdAt).toLocaleString("vi-VN")}
+          </div>
+        </div>
       ),
     },
     {
       title: "Khách hàng",
-      dataIndex: "customerName",
-      render: (name: string, record: IOrder) => (
-        <Flex align="center" gap={8}>
-          <Avatar size={30} icon={<UserOutlined />} />
-          <Flex vertical>
-            <Text style={{ fontSize: 13, fontWeight: 500 }}>{name || "Khách vãng lai"}</Text>
-            <Text type="secondary" style={{ fontSize: 11 }}>{record.customerPhone || "—"}</Text>
-          </Flex>
-        </Flex>
-      ),
-    },
-    {
-      title: "Tổng tiền",
-      dataIndex: "totalAmount",
-      align: "right",
-      render: (amount: number) => (
-        <Text strong style={{ color: "#ff4d4f" }}>
-          {amount.toLocaleString("vi-VN")} đ
-        </Text>
+      render: (_, r) => (
+        <div>
+          <b>{r.customerName}</b>
+          <div style={{ fontSize: 12 }}>{r.customerPhone}</div>
+        </div>
       ),
     },
     {
       title: "Thanh toán",
-      dataIndex: "paymentMethod",
-      align: "center",
-      render: (method: string) => (
-        <Tag color={method === "CASH" ? "cyan" : "purple"}>
-          {method === "CASH" ? "Tiền mặt" : "Chuyển khoản"}
-        </Tag>
+      render: (_, r) => (
+        <Space direction="vertical" size={0}>
+          <Tag color="purple">
+            {r.deliveryMethod === "DELIVERY" ? "Giao tận nơi" : "Tại quán"}
+          </Tag>
+          <Tag color="cyan">
+            {r.paymentMethod === "CASH" ? "Tiền mặt" : "Chuyển khoản"}
+          </Tag>
+        </Space>
       ),
     },
     {
@@ -120,21 +127,6 @@ const OrderPage = () => {
       },
     },
     {
-      title: "Thời gian",
-      dataIndex: "createdAt",
-      render: (time: string) => (
-        <Flex align="center" gap={4}>
-          <ClockCircleOutlined style={{ color: "#888", fontSize: 12 }} />
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            {new Date(time).toLocaleTimeString("vi-VN", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </Text>
-        </Flex>
-      ),
-    },
-    {
       title: "Hành động",
       render: (_, r) => (
         <Space>
@@ -148,7 +140,6 @@ const OrderPage = () => {
               }}
             />
           </Tooltip>
-
           {r.orderStatus === "PENDING" && (
             <>
               <Tooltip title="Đã thanh toán">
@@ -169,7 +160,6 @@ const OrderPage = () => {
               </Tooltip>
             </>
           )}
-
           {r.orderStatus === "PAID" && (
             <Tooltip title="Hoàn thành">
               <Button
@@ -189,41 +179,41 @@ const OrderPage = () => {
       <Flex vertical gap={16}>
         <Flex gap={12}>
           <StatsCard
-            icon={<ShoppingCartOutlined />}
+            icon={<AppstoreOutlined />}
             title="Tổng đơn"
-            value={orders.length}
+            value={data.length}
             variant="primary"
           />
           <StatsCard
             icon={<ExclamationCircleOutlined />}
             title="Chờ xử lý"
-            value={orders.filter((o) => o.orderStatus === "PENDING").length}
+            value={data.filter((o) => o.orderStatus === "PENDING").length}
             variant="warning"
           />
           <StatsCard
             icon={<DollarCircleOutlined />}
             title="Đã thanh toán"
-            value={orders.filter((o) => o.orderStatus === "PAID").length}
+            value={data.filter((o) => o.orderStatus === "PAID").length}
             variant="success"
           />
+
           <StatsCard
             icon={<CheckCircleOutlined />}
             title="Hoàn thành"
-            value={orders.filter((o) => o.orderStatus === "COMPLETED").length}
+            value={data.filter((o) => o.orderStatus === "COMPLETED").length}
             variant="success"
           />
         </Flex>
-
         <TableUI<IOrder>
           columns={columns}
-          data={orders}
+          data={data}
           loading={loading}
           rowKey="orderId"
           rightExtra={
             <TableToolbar
               keyword={keyword}
               setKeyword={setKeyword}
-              onSearch={() => { }}
+              onSearch={() => {}}
               onReload={fetchOrders}
             />
           }
