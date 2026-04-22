@@ -59,8 +59,8 @@ const columns = [
   },
   {
     title: "Khách hàng",
-    dataIndex: "userName",
-    key: "userName",
+    dataIndex: "customerName",
+    key: "customerName",
     render: (v: string) => (
       <Flex align="center" gap={8}>
         <Avatar size="small" icon={<UserOutlined />} />

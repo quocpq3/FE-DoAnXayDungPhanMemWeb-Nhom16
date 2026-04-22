@@ -94,11 +94,11 @@ const PaymentPage = () => {
         <Flex vertical gap={6}>
           <Flex justify="space-between">
             <Text type="secondary">Họ tên</Text>
-            <Text strong>{order.userName || "Khách vãng lai"}</Text>
+            <Text strong>{order.customerName || "Khách vãng lai"}</Text>
           </Flex>
           <Flex justify="space-between">
             <Text type="secondary">Số điện thoại</Text>
-            <Text>{order.userPhone || "—"}</Text>
+            <Text>{order.customerPhone || "—"}</Text>
           </Flex>
           <Flex justify="space-between">
             <Text type="secondary">Địa chỉ</Text>
