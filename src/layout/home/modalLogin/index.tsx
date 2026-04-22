@@ -47,14 +47,15 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ open, setOpen, setUser }) => {
         return;
       }
 
+      localStorage.setItem("token", data?.token ?? "");
+      const resolvedRoles = data?.user?.roles ?? getCurrentRoles();
       const user = {
         name: data?.user?.name ?? values.email,
         email: data?.user?.email ?? values.email,
-        roles: data?.user?.roles ?? getCurrentRoles(),
+        roles: resolvedRoles.length > 0 ? resolvedRoles : ["ROLE_USER"],
       };
 
       setUser?.(user);
-      localStorage.setItem("token", data?.token);
       localStorage.setItem("user", JSON.stringify(user));
 
       messageApi.success(`Xin chào ${user.name}! Bạn đã đăng nhập thành công.`);

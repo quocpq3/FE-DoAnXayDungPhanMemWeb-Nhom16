@@ -12,7 +12,7 @@ const RequireAdmin: React.FC<RequireAdminProps> = ({ children }) => {
       <Result
         status="403"
         title="403"
-        subTitle="Bạn không có quyền truy cập vào trang này."
+        subTitle="Bạn không có quyền truy cập vào trang này"
         extra={
           <Link to="/">
             <Button type="primary">Về trang chủ</Button>

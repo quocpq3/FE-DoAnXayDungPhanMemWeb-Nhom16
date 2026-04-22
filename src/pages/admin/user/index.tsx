@@ -137,7 +137,7 @@ const UserPage = () => {
         <Result
           status="403"
           title="403"
-          subTitle="Bạn không có quyền truy cập trang phân quyền người dùng."
+          subTitle="Bạn không có quyền truy cập vào trang này"
         />
       ) : (
         <TableUI

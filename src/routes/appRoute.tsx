@@ -90,7 +90,11 @@ export const routes: AppRoute[] = [
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <RequireAdmin>
+        <AdminLayout />
+      </RequireAdmin>
+    ),
     children: [
       {
         index: true,
@@ -118,7 +122,7 @@ export const routes: AppRoute[] = [
         icon: <FontAwesomeIcon icon={faChartLine} />,
       },
       {
-        path: "users",
+        path: "user",
         element: (
           <RequireAdmin>
             <UserPage />
