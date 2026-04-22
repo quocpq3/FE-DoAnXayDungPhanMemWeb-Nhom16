@@ -12,8 +12,8 @@ export interface IOrder {
   orderId: number;
   orderCode: string;
   userId: number | null;
-  customerName: string;
-  customerPhone: string;
+  userName: string | null;
+  userPhone: string | null;
   deliveryAddress: string;
   orderStatus: string;
   paymentMethod: PaymentMethod;
@@ -24,8 +24,10 @@ export interface IOrder {
   items: IOrderItem[];
 }
 export interface IOrderCreate {
-  customerName: string;
-  customerPhone: string;
+  userId?: number | null;
+  orderCode?: string;
+  userName: string | null;
+  userPhone: string | null;
   deliveryAddress: string;
   paymentMethod: string;
   deliveryMethod: string;
@@ -36,6 +38,7 @@ export interface IOrderCreate {
 }
 
 export interface IOrderItemCreate {
+  orderItemId?: number;
   itemId: number;
   itemName: string;
   imageUrl?: string;
