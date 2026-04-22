@@ -1,0 +1,18 @@
+/* layout container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+.container.space-between {
+  justify-content: space-between;
+}
+.container.space-evenly {
+  justify-content: space-evenly;
+}
+/* reset styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
