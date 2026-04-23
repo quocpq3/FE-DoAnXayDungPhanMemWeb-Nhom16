@@ -1,9 +1,8 @@
-import React, { createContext, useRef } from "react";
+import React, { createContext, useEffect } from "react";
 import type { IFood } from "../services/apis/food/food.interface";
 import type { ICategory } from "../services/apis/categories/categories.interface";
 import { getCategory } from "../services/apis/categories/categories.api";
 import { getFoods } from "../services/apis/food/food.api";
-import { useOnceEffect } from "../hooks/useOnceEffect";
 
 interface FoodContextType {
   foods: IFood[];
@@ -20,8 +19,6 @@ export const FoodProvider: React.FC<{ children: React.ReactNode }> = ({
   const [foods, setFoods] = React.useState<IFood[]>([]);
   const [categories, setCategories] = React.useState<ICategory[]>([]);
   const [loading, setLoading] = React.useState(false);
-  // fix duduplicate request
-  const hasFetched = useRef(false);
 
   const fecthAll = async () => {
     setLoading(true);
@@ -38,10 +35,7 @@ export const FoodProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(false);
     }
   };
-  useOnceEffect(() => {
-    if (hasFetched.current) return;
-
-    hasFetched.current = true;
+  useEffect(() => {
     fecthAll();
   }, []);
 

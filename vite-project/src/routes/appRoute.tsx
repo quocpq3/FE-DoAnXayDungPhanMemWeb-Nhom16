@@ -16,9 +16,12 @@ import {
   faPizzaSlice,
   faChartLine,
   faLayerGroup,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import OrderPage from "../pages/admin/order";
+import UserPage from "../pages/admin/user";
 import OrderConfirmationPage from "../pages/home/order/orderconfirmation";
+import RequireAdmin from "./RequireAdmin";
 
 export interface AppRoute {
   path?: string;
@@ -87,7 +90,11 @@ export const routes: AppRoute[] = [
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <RequireAdmin>
+        <AdminLayout />
+      </RequireAdmin>
+    ),
     children: [
       {
         index: true,
@@ -113,6 +120,16 @@ export const routes: AppRoute[] = [
         element: <OrderPage />,
         label: "Đơn hàng",
         icon: <FontAwesomeIcon icon={faChartLine} />,
+      },
+      {
+        path: "users",
+        element: (
+          <RequireAdmin>
+            <UserPage />
+          </RequireAdmin>
+        ),
+        label: "Người dùng",
+        icon: <FontAwesomeIcon icon={faUser} />,
       },
     ],
   },

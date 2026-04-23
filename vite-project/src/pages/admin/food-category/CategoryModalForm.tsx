@@ -27,6 +27,7 @@ const CategotyModalForm = ({
 }: IProps) => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const { message } = App.useApp();
 
   useEffect(() => {
@@ -46,7 +47,6 @@ const CategotyModalForm = ({
       message.success("Thêm loại món thành công");
       form.resetFields();
       onSuccess();
-      onClose();
     } catch {
       message.error("Thêm loại món thất bại");
     } finally {
@@ -64,7 +64,6 @@ const CategotyModalForm = ({
       message.success("Cập nhập loại món thành công");
       form.resetFields();
       onSuccess();
-      onClose();
     } catch {
       message.error("Cập nhật loại món thất bại");
     } finally {
