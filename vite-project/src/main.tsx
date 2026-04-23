@@ -8,6 +8,7 @@ import { ProConfigProvider, viVNIntl } from "@ant-design/pro-components";
 import { App as AntdApp } from "antd";
 import { FoodProvider } from "./context/FoodContext.tsx";
 import { CartProvider } from "./context/CartContext.tsx";
+import { OrderProvider } from "./context/OrderContext.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ConfigProvider
@@ -29,7 +30,9 @@ createRoot(document.getElementById("root")!).render(
         <AntdApp>
           <FoodProvider>
             <CartProvider>
-              <App />
+              <OrderProvider>
+                <App />
+              </OrderProvider>
             </CartProvider>
           </FoodProvider>
         </AntdApp>
