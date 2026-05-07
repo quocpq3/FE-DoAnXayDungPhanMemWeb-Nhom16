@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -48,6 +48,25 @@ const OrderConfirmationPage: React.FC = () => {
   const { message } = App.useApp();
 
   const [form] = Form.useForm();
+
+  // lấy thông tin user điền vào form khi đăng nhập
+  const user = (() => {
+    try {
+      const raw = localStorage.getItem("user");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  })();
+  useEffect(() => {
+    if (user) {
+      form.setFieldsValue({
+        fullName: user.name || "",
+        email: user.email || "",
+        // phone: user.phone || "",
+      });
+    }
+  }, [form, user]);
 
   const onFinish = async (values: ICheckoutForm) => {
     if (cartItems.length === 0) {

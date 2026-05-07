@@ -14,8 +14,10 @@ const { Header } = Layout;
 
 const HeaderLayout: React.FC = () => {
   const location = useLocation();
+
   const [openModal, setOpenModal] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+
   const { totalItems } = useCart();
 
   const [user, setUser] = useState<any>(() => {
@@ -38,7 +40,10 @@ const HeaderLayout: React.FC = () => {
     };
 
     window.addEventListener("storage", onStorageChange);
-    return () => window.removeEventListener("storage", onStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", onStorageChange);
+    };
   }, []);
 
   const genderMenuItems = (routes: AppRoute[]) => {
@@ -46,7 +51,7 @@ const HeaderLayout: React.FC = () => {
       .filter((route) => route.label)
       .map((route) => {
         const path = route.index ? "/" : `/${route.path}`;
-        if (!path) return null;
+
         return {
           key: path,
           label: <NavLink to={path}>{route.label}</NavLink>,
@@ -62,7 +67,15 @@ const HeaderLayout: React.FC = () => {
     setCartOpen(false);
   };
 
+  const handleLogout = () => {
+    setUser(null);
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  };
+
   const mainRoutes = routes.find((r) => r.path === "/");
+
   const items = genderMenuItems(mainRoutes?.children || []);
 
   return (
@@ -80,19 +93,39 @@ const HeaderLayout: React.FC = () => {
           height: 64,
         }}
       >
-        <div className="container space-between">
-          <Logo />
+        <div
+          className="container"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr auto 1fr",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Logo />
+          </div>
 
           <Menu
-            className="justify-center font-semibold"
+            className="font-semibold"
             mode="horizontal"
             theme="light"
             selectedKeys={[location.pathname]}
             items={items}
-            style={{ flex: 1 }}
+            style={{
+              borderBottom: "none",
+              justifyContent: "center",
+              minWidth: "max-content",
+            }}
           />
-
-          <div className="flex items-center gap-3">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
             <Badge count={totalItems} offset={[-5, 5]}>
               <Button
                 icon={<ShoppingOutlined />}
@@ -106,36 +139,51 @@ const HeaderLayout: React.FC = () => {
                 }}
               />
             </Badge>
-            {!user && (
-              <ButtonMain onClick={() => setOpenModal(true)} color="danger">
+
+            {!user ? (
+              <ButtonMain
+                onClick={() => setOpenModal(true)}
+                color="danger"
+              >
                 Đăng nhập
               </ButtonMain>
-            )}
-            {user && (
+            ) : (
               <>
-                <span>Xin chào {user.name || user.email}</span>
+                <span
+                  style={{
+                    maxWidth: 140,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    fontWeight: 500,
+                  }}
+                >
+                  Xin chào {user.name || user.email}
+                </span>
+
                 <ButtonMain
-                  onClick={() => {
-                    setUser(null);
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("user");
-              }}
-              color="blue"
-            > 
-            Đăng xuất
-            </ButtonMain>
+                  onClick={handleLogout}
+                  color="primary"
+                  variant="outlined"
+                >
+                  Đăng xuất
+                </ButtonMain>
               </>
             )}
           </div>
         </div>
       </Header>
+
       <ModalLogin
         open={openModal}
         setOpen={setOpenModal}
         setUser={setUser}
       />
 
-      <ShoppingCartDrawer open={cartOpen} onClose={onCloseCart} />
+      <ShoppingCartDrawer
+        open={cartOpen}
+        onClose={onCloseCart}
+      />
     </>
   );
 };
