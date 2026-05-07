@@ -75,7 +75,6 @@ const FoodModal = ({ open, onClose, onSuccess, formType, food }: IProps) => {
       message.success("Thêm món ăn thành công");
       form.resetFields();
       onSuccess();
-      onClose();
     } catch {
       message.error("Thêm món ăn thất bại");
     } finally {
@@ -97,7 +96,6 @@ const FoodModal = ({ open, onClose, onSuccess, formType, food }: IProps) => {
       message.success("Cập nhật món ăn thành công");
       form.resetFields();
       onSuccess();
-      onClose();
     } catch {
       message.error("Cập nhật món ăn thất bại");
     } finally {

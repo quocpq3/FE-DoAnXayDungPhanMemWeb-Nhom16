@@ -38,7 +38,7 @@ import {
 
 import { useFood } from "../../../context/FoodContext";
 import { useOrder } from "../../../context/OrderContext";
-import type { IOrderItem } from "../../../services/apis/order/order.interface";
+import type { IOrder, IOrderItem } from "../../../services/apis/order/order.interface";
 
 const { Text, Title } = Typography;
 
@@ -97,9 +97,9 @@ const columns = [
         <Text type="secondary">
           {t
             ? new Date(t).toLocaleTimeString("vi-VN", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+                hour: "2-digit",
+                minute: "2-digit",
+              })
             : "--"}
         </Text>
       </Flex>
@@ -107,48 +107,45 @@ const columns = [
   },
 ];
 
-
 const AdminDashboardPage = () => {
   const { foods, loading: foodLoading } = useFood();
   const { orders, loading: orderLoading } = useOrder();
 
-  //thống kê món ăn đang hoạt động
   const availableFoods = useMemo(
     () => foods.filter((f) => f.isAvailable).length,
     [foods]
   );
 
   const totalRevenue = useMemo(
-    () => orders.filter(o => o.orderStatus !== 'CANCELLED').reduce((sum, o) => sum + (o.totalAmount || 0), 0),
+    () => orders.filter((o: IOrder) => o.orderStatus !== "CANCELLED").reduce((sum: number, o: IOrder) => sum + (o.totalAmount || 0), 0),
     [orders]
   );
 
-  // biểu đồ doanh thu
   const revenueChartData = useMemo(() => {
     const dailyMap: Record<string, number> = {};
 
-    // lấy 7 ngày gần nhất
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      const dateStr = d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" });
       dailyMap[dateStr] = 0;
     }
 
-    orders.filter(o => o.orderStatus !== 'CANCELLED').forEach(o => {
-      const date = new Date(o.createdAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
-      if (dailyMap[date] !== undefined) {
-        dailyMap[date] += o.totalAmount;
-      }
-    });
+    orders
+      .filter((o: IOrder) => o.orderStatus !== "CANCELLED")
+      .forEach((o: IOrder) => {
+        const date = new Date(o.createdAt).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" });
+        if (dailyMap[date] !== undefined) {
+          dailyMap[date] += o.totalAmount || 0;
+        }
+      });
 
     return Object.entries(dailyMap).map(([date, revenue]) => ({
       date,
-      revenue
+      revenue,
     }));
   }, [orders]);
 
-  // tỉ lệ theo loại
   const categoryChartData = useMemo(() => {
     const map: Record<string, number> = {};
 
@@ -159,7 +156,6 @@ const AdminDashboardPage = () => {
     });
 
     const colors = ["#ff4d4f", "#fa8c16", "#1677ff", "#722ed1", "#52c41a"];
-
     const total = foods.length || 1;
 
     return Object.entries(map).map(([name, value], i) => ({
@@ -169,11 +165,10 @@ const AdminDashboardPage = () => {
     }));
   }, [foods]);
 
-  //top các món được order nhiều nhất
   const topFoods = useMemo(() => {
     const map: Record<string, { name: string; orders: number }> = {};
 
-    orders.forEach((o) => {
+    orders.forEach((o: IOrder) => {
       o.items?.forEach((it: IOrderItem) => {
         const name = it.itemName || "Unknown";
 
@@ -190,7 +185,6 @@ const AdminDashboardPage = () => {
       .slice(0, 5);
   }, [orders]);
 
-  // loading
   const loading = foodLoading || orderLoading;
 
   return (
@@ -226,7 +220,6 @@ const AdminDashboardPage = () => {
           />
         </Flex>
 
-        {/* charts */}
         <Flex gap={16}>
           <Card style={{ flex: 3, borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
             <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
@@ -297,7 +290,6 @@ const AdminDashboardPage = () => {
           </Card>
         </Flex>
 
-        {/* món bán chạy + tỉ lệ danh mục */}
         <Flex gap={16}>
           <Card style={{ flex: 2, borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
             <Flex align="center" gap={8} style={{ marginBottom: 16 }}>
