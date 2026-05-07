@@ -1,22 +1,40 @@
-import { Button, Result } from "antd";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { App, Button, Result } from "antd";
+import { Link, Navigate } from "react-router-dom";
 import { isAdmin } from "../helper/auth";
+import { useEffect, useRef, useState } from "react";
 
 type RequireAdminProps = {
   children: React.ReactNode;
 };
 
 const RequireAdmin: React.FC<RequireAdminProps> = ({ children }) => {
-  const location = useLocation();
   const token = localStorage.getItem("token");
 
-  // Chưa đăng nhập thì chuyển về trang login.
-  if (!token) {
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  const { message } = App.useApp();
+
+  const [redirect, setRedirect] = useState(false);
+
+  const showedMessage = useRef(false);
+
+  useEffect(() => {
+    if (!token && !showedMessage.current) {
+      showedMessage.current = true;
+
+      message.error("Bạn cần đăng nhập để truy cập trang admin");
+
+      setTimeout(() => {
+        setRedirect(true);
+      }, 500);
+    }
+  }, [token, message]);
+
+  // Chưa đăng nhập
+  if (!token && redirect) {
+    return <Navigate to="/" replace />;
   }
 
-  // Đăng nhập nhưng không phải admin thì hiển thị 403.
-  if (!isAdmin()) {
+  // Không phải admin
+  if (token && !isAdmin()) {
     return (
       <Result
         status="403"
@@ -30,6 +48,9 @@ const RequireAdmin: React.FC<RequireAdminProps> = ({ children }) => {
       />
     );
   }
+
+  // Chờ redirect
+  if (!token) return null;
 
   return <>{children}</>;
 };

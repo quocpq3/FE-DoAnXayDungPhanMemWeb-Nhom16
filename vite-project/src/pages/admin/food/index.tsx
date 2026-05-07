@@ -127,10 +127,24 @@ const FoodPage = () => {
             {record.isAvailable ? "Đang bán" : "Ngừng bán"}
           </Tag>
 
-          <Tag color={record.isCombo ? "purple" : "blue"}>
-            {record.isCombo ? "Combo" : "Món lẻ"}
-          </Tag>
+
         </Space>
+      ),
+    },
+    {
+      title: "Loại món",
+      render: (_, record) => (
+        <Tag color={record.isCombo ? "purple" : "blue"}>
+          {record.isCombo ? "Combo" : "Món lẻ"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Danh mục",
+      render: (_, record) => (
+        <Tag color={"purple"}>
+          {record.categoryName}
+        </Tag>
       ),
     },
     {

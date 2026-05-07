@@ -11,9 +11,8 @@ import {
 
 import type {
   IOrder,
-  IOrderCreate,
 } from "../../../services/apis/order/order.interface";
-import { getOrders, updateOrder } from "../../../services/apis/order/order.api";
+import { getOrders, updateOrderStatus } from "../../../services/apis/order/order.api";
 import OrderModal from "./OrderModal";
 import TableToolbar from "../../../components/table/TableToolbar";
 import StatsCard from "../../../components/card/StatsCard";
@@ -43,23 +42,6 @@ const OrderPage = () => {
     fetchOrders();
   }, []);
 
-  const mapOrderToUpdate = (record: IOrder): IOrderCreate => ({
-    customerName: record.customerName,
-    customerPhone: record.customerPhone,
-    deliveryAddress: record.deliveryAddress,
-    paymentMethod: record.paymentMethod,
-    deliveryMethod: record.deliveryMethod,
-    note: record.note,
-    totalAmount: record.totalAmount,
-    items: record.items.map((i) => ({
-      itemId: i.itemId,
-      itemName: i.itemName,
-      quantity: i.quantity,
-      unitPrice: i.unitPrice,
-      lineTotal: i.lineTotal,
-    })),
-  });
-
   const handleUpdateStatus = async (record: IOrder, status: string) => {
     const oldData = [...data];
     setData((prev) =>
@@ -69,12 +51,11 @@ const OrderPage = () => {
     );
 
     try {
-      await updateOrder(record.orderId, {
-        ...mapOrderToUpdate(record),
-        orderStatus: status,
-      });
+      await updateOrderStatus(record.orderId, status);
+      console.log(status);
     } catch {
       setData(oldData);
+      console.log(status);
       message.error("Cập nhật thất bại");
     }
   };
@@ -213,7 +194,7 @@ const OrderPage = () => {
             <TableToolbar
               keyword={keyword}
               setKeyword={setKeyword}
-              onSearch={() => {}}
+              onSearch={() => { }}
               onReload={fetchOrders}
             />
           }
