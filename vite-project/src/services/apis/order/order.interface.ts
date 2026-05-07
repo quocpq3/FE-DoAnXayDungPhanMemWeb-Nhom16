@@ -52,3 +52,6 @@ export interface ICheckoutForm {
   note?: string;
   paymentMethod: "cod" | "vnpay";
 }
+export interface IOrderStatusUpdate {
+  orderStatus: string;
+}
